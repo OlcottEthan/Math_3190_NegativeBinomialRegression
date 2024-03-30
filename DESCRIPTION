@@ -1,4 +1,4 @@
-Package: NegBinRegression
+Package: NegativeBinomialRegression
 Title: Assessing the Usefulness of Negative Binomial Regression
 Version: 0.0.1.0000
 Authors@R: 
