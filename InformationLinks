@@ -1,0 +1,13 @@
+Negative Binomial Distribution:
+https://en.wikipedia.org/wiki/Negative_binomial_distribution
+https://www.acsu.buffalo.edu/~adamcunn/probability/negativebinomial.html#:~:text=The%20negative%20binomial(r%2C%20p,of%20a%20geometric%20random%20variable.
+
+Negative Binomial Regression:
+https://www.simplilearn.com/negative-binomial-regression-article#:~:text=Negative%20binomial%20regression%20is%20a,be%20positive%20or%20negative%20integers.
+https://towardsdatascience.com/negative-binomial-regression-f99031bb25b4
+https://stats.oarc.ucla.edu/stata/dae/negative-binomial-regression/#:~:text=The%20outcome%20variable%20in%20a,the%20exposure%20cannot%20have%200s.
+
+Data Sets:
+https://vincentarelbundock.github.io/Rdatasets/datasets.html
+https://vincentarelbundock.github.io/Rdatasets/doc/DAAG/droughts.html
+https://vincentarelbundock.github.io/Rdatasets/doc/causaldata/restaurant_inspections.html
