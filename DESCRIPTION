@@ -1,0 +1,24 @@
+Package: NegBinRegression
+Title: Assessing the Usefulness of Negative Binomial Regression
+Version: 0.0.1.0000
+Authors@R: 
+  c(person("Ethan", "Olcott", email = "ethanolcott99@gmail.com", role = c("aut", "cre")),
+  person("Samuel", "Peterson", email = "p3tey5@gmail.com", role = c("aut", "ctb")),
+  person("Elijah", "Wagner", email = "elijahwagner555@gmail.com", role = c("aut", "ctb")))
+Description: This package is for assessing the usefulness of Negative Binomial
+  Regression among different datasets. It was created as part of the final project 
+  for Math 3190 Fundamentals of Data Science Spring 2024 at Southern Utah University.
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Depends: 
+    tidyverse,
+    R (>= 2.10)
+Suggests: 
+    knitr,
+    rmarkdown
+Imports:
+    kableExtra,
+    shiny
+LazyData: true
+VignetteBuilder: knitr

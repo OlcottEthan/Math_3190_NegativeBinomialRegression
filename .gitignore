@@ -1,0 +1,6 @@
+.Rproj.user
+.Rbuildignore
+.inst/doc
+.DS_Store
+.Rhistory
+inst/doc

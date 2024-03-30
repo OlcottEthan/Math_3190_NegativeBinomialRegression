@@ -1,0 +1,35 @@
+\nonstopmode{}
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[utf8]{inputenc} % @SET ENCODING@
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `NegBinRegression'}}
+\par\bigskip{\large \today}
+\end{center}
+\inputencoding{utf8}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdftitle = {NegBinRegression: Assessing the Usefulness of Negative Binomial Regression}}}{}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdfauthor = {Ethan Olcott; Samuel Peterson; Elijah Wagner}}}{}
+\begin{description}
+\raggedright{}
+\item[Title]\AsIs{Assessing the Usefulness of Negative Binomial Regression}
+\item[Version]\AsIs{0.0.1.0000}
+\item[Description]\AsIs{This package is for assessing the usefulness of Negative Binomial
+Regression among different datasets. It was created as part of the final project 
+for Math 3190 Fundamentals of Data Science Spring 2024 at Southern Utah University.}
+\item[Encoding]\AsIs{UTF-8}
+\item[Roxygen]\AsIs{list(markdown = TRUE)}
+\item[RoxygenNote]\AsIs{7.3.1}
+\item[Depends]\AsIs{tidyverse,
+R (>= 2.10)}
+\item[Suggests]\AsIs{knitr,
+rmarkdown}
+\item[Imports]\AsIs{kableExtra,
+shiny}
+\item[LazyData]\AsIs{true}
+\end{description}
+\Rdcontents{\R{} topics documented:}
