@@ -19,6 +19,7 @@ Suggests:
     rmarkdown
 Imports:
     kableExtra,
-    shiny
+    shiny,
+    shinyjs
 LazyData: true
 VignetteBuilder: knitr
