@@ -1,0 +1,32 @@
+---
+title: "Negative Binomial Regression"
+author: 'Samuel Anderson, Elijah Wagner, and Ethan Olcott'
+date: "April 17, 2024"
+output:
+  html_document:
+    df_print: paged
+header-includes: \usepackage{multirow}
+editor_options:
+  chunk_output_type: console
+urlcolor: blue
+---
+
+```{r setup, include = F}
+library(tidyverse)
+library(tsibble)
+library(lubridate)
+```
+
+# Negative Binomial Distribution
+
+
+# Negative Binomial Regression
+
+
+## Regression Requirements
+
+
+## Examples
+
+
+## Outcomes and Comparisons
