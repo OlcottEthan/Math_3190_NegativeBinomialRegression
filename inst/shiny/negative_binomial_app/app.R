@@ -1,44 +1,35 @@
 ui <- fluidPage(
-  shinyjs::useShinyjs(),
-  textInput("cor_guess", "Guess the correlation!"),
-  actionButton(
-    inputId = "submit_guess",
-    label = "Submit Guess"
-  ),
-  plotly::plotlyOutput("graph"),
-  textOutput("message"),
-  actionButton("reset_input", "Press to Play Again!")
+  withMathJax(),
+  titlePanel("Negative Binomial Distribution"),
+  
+  fluidRow(
+    column(4,
+           # Content for the first column
+           h3("Distribution Details"),
+           p("The negative binomial distribution models the number of Bernoulli 
+             trials needed for a certain number of successes to occur. A sequence 
+             of independent Bernoulli trials are conducted, each with the same 
+             probability \\(p\\) of success. The trial at which the \\(r\\)th 
+             success occurs is a negative binomial \\(r,p\\) random variable \\(X\\).")
+    ),
+    column(4,
+           # Content for the second column
+           h3("Distribution"),
+           p("This is the content of the second column.")
+    ),
+    column(4,
+           # Content for the third column
+           h3("Column 3"),
+           p("This is the content of the third column.")
+    )
+  )
 )
 
-server <- function(input, output, session) {
-  guess <- reactive(as.numeric(input$cor_guess))
-  num_rand <- reactive(rchisq(input$num, 10))
-  x <- rnorm(100, rnorm(1, 100, 50), rchisq(1, 10, 5))
-  y <- sign(runif(1, -1, 1))*x + rnorm(100, 0, 10)
-  true_cor <- cor(x, y)
+server <- function (input,output){
+  library(shiny)
+  library(kableExtra)
   
-  output$graph <- plotly::renderPlotly({
-    p <- ggraph(x, y, point_size = 2)
-    plotly::ggplotly(p)
-  })
   
-  observeEvent(
-    eventExpr = input[["submit_guess"]],
-    handlerExpr = {
-      output$message <- renderText(
-        paste0("Your guess was ",guess(),".\n\n
-             The true value was ", round(true_cor,3),".\n
-             That is a difference of ", abs(guess() - round(true_cor,3))
-               ,".")
-      )
-    }
-  )
-  
-  observeEvent(input$reset_input, {
-    #shinyjs::reset()
-    session$reload() # Works, but won't store guesses.
-  })
 }
 
-
-shinyApp(ui = ui, server = server)
+shinyApp(ui,server)
