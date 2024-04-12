@@ -5,7 +5,7 @@ date: "April 17, 2024"
 output:
   html_document:
     df_print: paged
-header-includes: \usepackage{multirow}
+header-includes: \usepackage{multirow, graphicx}
 editor_options:
   chunk_output_type: console
 urlcolor: blue
@@ -18,7 +18,68 @@ library(lubridate)
 ```
 
 # Negative Binomial Distribution
+1 Introduction
 
+1.1 The Binomial Distribution
+
+The Binomial Distribution is a probability distribution that describes the number of successes in a fixed number of independent Bernoulli trials, where there is only success or failure as outcomes.
+
+Some key assumptions and characteristics are:
+
+1. Fixed Number of Trials
+2. Independent Trials
+3. Boolean Outcomes
+4. Constant Probability
+5. Discrete Distribution
+
+1.2 Connection to Negative Binomial Distribution
+
+The Binomial Distribution predicts the number of successes when the number of trials is fixed. The Negative Binomial Distribution differs from this in that the number of successes is fixed, and the number of required trials is random.
+
+2 The Negative Binomial
+
+2.1 Necessary Conditions
+
+1. Independent Trials
+2. Boolean Outcomes
+3. Constant Probability
+4. Trials Continue Till Desired Success Total Reached
+
+The Negative Binomial Distribution has many of the same types of conditions as the Binomial Distribution (as to be expected), but the major difference comes in the fixed variable. The Negative Binomial is geared towards identifying the number of trials needed for a certain amount of trials.
+
+2.2 Math Behind Negative Binomial
+
+The Probability Mass Function of the Negative Binomial Distribution with r = number of successes, p = probability of success, and k = the number of failures before the rth success is given by:
+
+$nb(k; r, p) = \binom{k + r - 1}{r - 1} \cdot p^{r} \cdot (1 - p)^k$
+
+x = 0, 1, 2, ...
+
+The Expected Value and Variance of the Negative Binomial Distribution described above are as follows:
+
+Expected Value:
+
+$\frac{r \cdot (1 - p)}{p}$
+
+Variance:
+
+$\frac{r \cdot (1 - p)}{p^2}$
+
+Note: There are many variations of the Negative Binomial Distribution when using separate parameters. There are variations when you can count the number of trials, redefine the r as the number of failures, or other variations of them. These do change the PMF and E(X) and V(X) functions for the different variations.
+
+2.3 Statistical Inference
+
+Minimum Variance Unbiased Estimator for p:
+
+If the probability of success isn't known and sampling will continue until the rth success is found, a sufficient statistic for the experiment then is k, the number of failures. In this case to estimate p, the minimum variance unbiased estimator is:
+
+$\hat{p} = \frac{r - 1}{r + k - 1}$
+
+Maximum Likelihood Estimate of p:
+
+$\hat{p} = \frac{r}{r + k}$
+
+This estimate is biased, however its inverse $\frac{r + k}{r}$ is an unbiased estimate of $\frac{1}{p}$
 
 # Negative Binomial Regression
 
