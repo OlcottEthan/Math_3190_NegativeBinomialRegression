@@ -101,16 +101,13 @@ See the following
 <br>
 Thus when $p=\dfrac{r}{r+\lambda}\Rightarrow\lambda=\dfrac{(1-p)r}p$ and $r\to\infty$ whe have $\text{NegBin}(r,p)=\text{Poisson}(\lambda)$.
 
-This is important because in regression, when using the Negative binomial distribution we are able to account for the mean and the variance being different thus allowing it to be applied in more cases.
-
-<br>
-Now see that we have the regressive model for the Negative Binomial:
+This is important because in regression, when using the Negative binomial distribution we are able to account for the mean and the variance being different thus giving us the regressive model for the Negative Binomial distribution:
 
 $$\mathbf Y_i\mid\boldsymbol\beta_0,\boldsymbol\beta_1,\cdots,\boldsymbol\beta_p,r\;\overset{\text{ind}}\sim\;\text{NegBin}(\mu_i,r)
 \quad\text{with}\quad
 \ln(\mu_i)=\boldsymbol\beta_0+\boldsymbol\beta_1\mathbf X_{i1}+\cdots+\boldsymbol\beta_p\mathbf X_{ip}$$
 
-and priors:
+with priors:
 \begin{align}
 \boldsymbol\beta_0\;&\sim\;N(m_0,s_0^2)\\
 \boldsymbol\beta_1\;&\sim\;N(m_1,s_1^2)\\

@@ -1727,16 +1727,14 @@ parameter to model the over-dispersion.</p>
 and <span class="math inline">\(r\to\infty\)</span> whe have <span class="math inline">\(\text{NegBin}(r,p)=\text{Poisson}(\lambda)\)</span>.</p>
 <p>This is important because in regression, when using the Negative
 binomial distribution we are able to account for the mean and the
-variance being different thus allowing it to be applied in more
-cases.</p>
-<p><br> Now see that we have the regressive model for the Negative
-Binomial:</p>
+variance being different thus giving us the regressive model for the
+Negative Binomial distribution:</p>
 <p><span class="math display">\[\mathbf
 Y_i\mid\boldsymbol\beta_0,\boldsymbol\beta_1,\cdots,\boldsymbol\beta_p,r\;\overset{\text{ind}}\sim\;\text{NegBin}(\mu_i,r)
 \quad\text{with}\quad
 \ln(\mu_i)=\boldsymbol\beta_0+\boldsymbol\beta_1\mathbf
 X_{i1}+\cdots+\boldsymbol\beta_p\mathbf X_{ip}\]</span></p>
-<p>and priors: <span class="math display">\[\begin{align}
+<p>with priors: <span class="math display">\[\begin{align}
 \boldsymbol\beta_0\;&amp;\sim\;N(m_0,s_0^2)\\
 \boldsymbol\beta_1\;&amp;\sim\;N(m_1,s_1^2)\\
 &amp;\vdots\\
