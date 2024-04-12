@@ -81,6 +81,12 @@ $\hat{p} = \frac{r}{r + k}$
 
 This estimate is biased, however its inverse $\frac{r + k}{r}$ is an unbiased estimate of $\frac{1}{p}$
 
+2.4 Connection to the Poisson Distribution
+
+The Poisson Distribution and the Negative Binomial Distribution are both distributions that can be seen as similar in nature. It is possible to look at the Negative Binomial Distribution as the generalization of the Poisson Distribution. This can be done because the Negative Binomial Distribution converges to the Poisson Distribution as the number of trials goes to infinity and the probability of success is relatively small. In other words, the Poisson Distribution rears its' head as the pk = \lambda. Or, in even more words, in situations as described above the Negative Binomial Distribution behaves similarly to the Poisson Distribution.
+
+The Negative Binomial Distribution allows for the Variance and Mean to vary (which the Poisson Distribution does not allow for) and thus can deal with some data that the Poisson cannot. This is especially useful when the Poisson Distribution has issues with data that is over-dispersed and provides an alternative to the Quasi-Poisson option we explored in this class.
+
 # Negative Binomial Regression
 
 
