@@ -17,10 +17,10 @@ library(tsibble)
 library(lubridate)
 ```
 
-# Negative Binomial Distribution
-1 Introduction
 
-1.1 The Binomial Distribution
+## Negative Binomial Distribution
+
+#### 1.1 The Binomial Distribution
 
 The Binomial Distribution is a probability distribution that describes the number of successes in a fixed number of independent Bernoulli trials, where there is only success or failure as outcomes.
 
@@ -32,13 +32,13 @@ Some key assumptions and characteristics are:
 4. Constant Probability
 5. Discrete Distribution
 
-1.2 Connection to Negative Binomial Distribution
+#### 1.2 Connection to Negative Binomial Distribution
 
 The Binomial Distribution predicts the number of successes when the number of trials is fixed. The Negative Binomial Distribution differs from this in that the number of successes is fixed, and the number of required trials is random.
 
-2 The Negative Binomial
+### 2 The Negative Binomial
 
-2.1 Necessary Conditions
+#### 2.1 Necessary Conditions
 
 1. Independent Trials
 2. Boolean Outcomes
@@ -47,7 +47,7 @@ The Binomial Distribution predicts the number of successes when the number of tr
 
 The Negative Binomial Distribution has many of the same types of conditions as the Binomial Distribution (as to be expected), but the major difference comes in the fixed variable. The Negative Binomial is geared towards identifying the number of trials needed for a certain amount of trials.
 
-2.2 Math Behind Negative Binomial
+#### 2.2 Math Behind Negative Binomial
 
 The Probability Mass Function of the Negative Binomial Distribution with r = number of successes, p = probability of success, and k = the number of failures before the rth success is given by:
 
@@ -67,7 +67,7 @@ $\frac{r \cdot (1 - p)}{p^2}$
 
 Note: There are many variations of the Negative Binomial Distribution when using separate parameters. There are variations when you can count the number of trials, redefine the r as the number of failures, or other variations of them. These do change the PMF and E(X) and V(X) functions for the different variations.
 
-2.3 Statistical Inference
+#### 2.3 Statistical Inference
 
 Minimum Variance Unbiased Estimator for p:
 
@@ -81,13 +81,20 @@ $\hat{p} = \frac{r}{r + k}$
 
 This estimate is biased, however its inverse $\frac{r + k}{r}$ is an unbiased estimate of $\frac{1}{p}$
 
-# Negative Binomial Regression
+## Negative Binomial Regression
+
+Negative Binomial Regression is very similar to multiple regression but instead of assuming that the dependent variable is normal we assume that it follows a negative binomial distribution.
+
+This method is typically used when the data is over-dispersed, IE: the variance of the observed results is higher than the variance the model predicted. It also can be used as a generalization of Poisson regression since the mean structure is the same and it also has an extra parameter to model the over-dispersion.
+
+See that the Poisson distribution can be given as follows
+
+$$\text{Poisson}(\lambda)=\lim_{r\to\infty}\text{NegativeBinomial}\Big(r,\frac{r}{r+\lambda}\Big)$$
+
+### Regression Requirements
 
 
-## Regression Requirements
+### Examples
 
 
-## Examples
-
-
-## Outcomes and Comparisons
+### Outcomes and Comparisons
