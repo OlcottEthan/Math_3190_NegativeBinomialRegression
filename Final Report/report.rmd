@@ -17,16 +17,25 @@ library(tsibble)
 library(lubridate)
 ```
 
-# Negative Binomial Distribution
+## Negative Binomial Distribution
 
 
-# Negative Binomial Regression
+## Negative Binomial Regression
+
+Negative Binomial Regression is very similar to multiple regression but instead of assuming that the dependent variable is normal we assume that it follows a negative binomial distribution.
+
+This method is typically used when the data is over-dispersed, IE: the variance of the observed results is higher than the variance the model predicted. It also can be used as a generalization of Poisson regression since the mean structure is the same and it also has an extra parameter to model the over-dispersion.
+
+See that the Poisson distribution can be given as follows
+
+$$\text{Poisson}(\lambda)=\lim_{r\to\infty}\text{NegativeBinomial}\Big(r,\frac{r}{r+\lambda}\Big)$$
 
 
-## Regression Requirements
+
+### Regression Requirements
 
 
-## Examples
+### Examples
 
 
-## Outcomes and Comparisons
+### Outcomes and Comparisons
