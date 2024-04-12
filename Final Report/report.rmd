@@ -51,7 +51,7 @@ The Negative Binomial Distribution has many of the same types of conditions as t
 
 The Probability Mass Function of the Negative Binomial Distribution with r = number of successes, p = probability of success, and k = the number of failures before the rth success is given by:
 
-$nb(k; r, p) = \binom{k + r - 1}{r - 1} \cdot p^{r} \cdot (1 - p)^k$
+$\text{NegBin}(k\mid r, p) = \binom{k + r - 1}{r - 1} \cdot p^{r} \cdot (1 - p)^k$
 
 x = 0, 1, 2, ...
 
@@ -65,7 +65,7 @@ Variance:
 
 $\frac{r \cdot (1 - p)}{p^2}$
 
-Note: There are many variations of the Negative Binomial Distribution when using separate parameters. There are variations when you can count the number of trials, redefine the r as the number of failures, or other variations of them. These do change the PMF and E(X) and V(X) functions for the different variations.
+Note: There are many variations of the Negative Binomial Distribution when using separate parameters. There are variations when you can count the number of trials, redefine the r as the number of failures, or other variations of them. These do change the PMF and E$(x)$ and V$(X)$ functions for the different variations.
 
 #### 2.3 Statistical Inference
 
@@ -87,11 +87,41 @@ Negative Binomial Regression is very similar to multiple regression but instead 
 
 This method is typically used when the data is over-dispersed, IE: the variance of the observed results is higher than the variance the model predicted. It also can be used as a generalization of Poisson regression since the mean structure is the same and it also has an extra parameter to model the over-dispersion.
 
-See that the Poisson distribution can be given as follows
+See the following
 
-$$\text{Poisson}(\lambda)=\lim_{r\to\infty}\text{NegativeBinomial}\Big(r,\frac{r}{r+\lambda}\Big)$$
+\begin{align}
+\lim_{r\to\infty}\text{NegBin}\Big(r,\frac{r}{r+\lambda}\Big)
+&=\lim_{r\to\infty}\left(\frac{(k+r)!}{k!r!}\left(1-\frac{r}{r+\lambda}\right)^k\left(\frac{r}{r+\lambda}\right)^r\right)\\
+&=\lim_{r\to\infty}\left(\frac{\lambda^k}{k!}\cdot\frac{(r+k)!}{r!(r+\lambda)^k}\cdot\frac{1}{\left(1+\frac{\lambda}{r}\right)^r}\right)\\
+&=\frac{\lambda^k}{k!}\cdot1\cdot\frac{1}{e^\lambda}\\
+&=\frac{\lambda^ke^{-\lambda}}{k!}\\
+&=\text{Poisson}(\lambda)\qquad\blacksquare
+\end{align}
+
+<br>
+Thus when $p=\dfrac{r}{r+\lambda}\Rightarrow\lambda=\dfrac{(1-p)r}p$ and $r\to\infty$ whe have $\text{NegBin}(r,p)=\text{Poisson}(\lambda)$.
+
+This is important because in regression, when using the Negative binomial distribution we are able to account for the mean and the variance being different thus allowing it to be applied in more cases.
+
+<br>
+Now see that we have the regressive model for the Negative Binomial:
+
+$$\mathbf Y_i\mid\boldsymbol\beta_0,\boldsymbol\beta_1,\cdots,\boldsymbol\beta_p,r\;\overset{\text{ind}}\sim\;\text{NegBin}(\mu_i,r)
+\quad\text{with}\quad
+\ln(\mu_i)=\boldsymbol\beta_0+\boldsymbol\beta_1\mathbf X_{i1}+\cdots+\boldsymbol\beta_p\mathbf X_{ip}$$
+
+and priors:
+\begin{align}
+\boldsymbol\beta_0\;&\sim\;N(m_0,s_0^2)\\
+\boldsymbol\beta_1\;&\sim\;N(m_1,s_1^2)\\
+&\vdots\\
+\boldsymbol\beta_p\;&\sim\;N(m_p,s_p^2)\\
+r\;&\sim\;\text{Exp}(\cdots)
+\end{align}
+
 
 ### Regression Requirements
+
 
 
 ### Examples
