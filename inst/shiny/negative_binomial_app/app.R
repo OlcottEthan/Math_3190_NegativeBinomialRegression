@@ -1,35 +1,41 @@
 ui <- fluidPage(
-  withMathJax(),
-  titlePanel("Negative Binomial Distribution"),
-  
-  fluidRow(
-    column(4,
-           # Content for the first column
-           h3("Distribution Details"),
-           p("The negative binomial distribution models the number of Bernoulli 
-             trials needed for a certain number of successes to occur. A sequence 
-             of independent Bernoulli trials are conducted, each with the same 
-             probability \\(p\\) of success. The trial at which the \\(r\\)th 
-             success occurs is a negative binomial \\(r,p\\) random variable \\(X\\).")
+  titlePanel("Negative Binomial Probability Function"),
+  sidebarLayout(
+    sidebarPanel(
+      numericInput("size", "Number of Successes:", 5),
+      textOutput("probValue")
     ),
-    column(4,
-           # Content for the second column
-           h3("Distribution"),
-           p("This is the content of the second column.")
-    ),
-    column(4,
-           # Content for the third column
-           h3("Column 3"),
-           p("This is the content of the third column.")
+    mainPanel(
+      plotOutput("distPlot")
     )
   )
 )
 
-server <- function (input,output){
-  library(shiny)
-  library(kableExtra)
+# Define server logic
+server <- function(input, output) {
+  probability <- reactive({
+    max(1 - exp(-((input$size)^2)/2042),0.995)
+  })
   
+  output$probValue <- renderText({
+    paste(format(probability(), digits=4))
+  })
   
+  # Plot simulated negative binomial distribution based on input parameters
+  output$distPlot <- renderPlot({
+    # Define maximum x based on the range where probabilities are significant
+    max_x <- qnbinom(probability(), size = input$size, prob = .44433)
+    simulated_data <- dnbinom(0:max_x, size = input$size, prob = .44433)
+    
+    # Plot the data
+    plot(0:max_x, simulated_data, type = "h", 
+         main = paste("Simulated Negative Binomial Distribution\n",
+                      "Number of successes:", input$size,
+                      "\nProbability of success:", input$prob),
+         xlab = "Number of Failures", ylab = "Probability", col = "blue")
+  })
 }
 
-shinyApp(ui,server)
+# Run the application
+shinyApp(ui = ui, server = server)
+
