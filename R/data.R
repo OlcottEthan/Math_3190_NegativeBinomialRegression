@@ -74,3 +74,29 @@
 "restaurant_inspections"
 
 
+#' Ship Accidents
+#'
+#' @description Data on ship accidents.
+#'
+#' @usage ship_accidents
+#' @format A data frame containing 40 observations on 5 ship types in 4 vintages and 2 service periods
+#'   \describe{
+#'     \item{type}{factor with levels "A" to "E" for the different ship types,}
+#'     \item{construction}{factor with levels "1960-64", "1965-69", "1970-74", "1975-79" for the periods of construction,}
+#'     \item{operation}{factor with levels "1960-74", "1975-79" for the periods of operation,}
+#'     \item{service}{aggregate months of service,}
+#'     \item{incidents}{number of damage incidents.}
+#'   }
+#' @details The data are from McCullagh and Nelder (1989, p. 205, Table 6.2) and were also used by Greene (2003, Ch. 21), see below.
+#' 
+#' There are five ships (observations 7, 15, 23, 31, 39) with an operation period before the construction period, hence the variables service and incidents are necessarily 0. An additional observation (34) has entries representing accidentally empty cells (see McCullagh and Nelder, 1989, p. 205).
+#' 
+#' It is a bit unclear what exactly the above means. In any case, the models are fit only to those observations with service > 0.
+#' @source Online complements to Greene (2003).
+#' 
+#' https://pages.stern.nyu.edu/~wgreene/Text/tables/tablelist5.htm
+#' @references Greene, W.H. (2003). Econometric Analysis, 5th edition. Upper Saddle River, NJ: Prentice Hall.
+#' 
+#' McCullagh, P. and Nelder, J.A. (1989). Generalized Linear Models, 2nd edition. London: Chapman & Hall.
+#' @seealso Greene2003, AER package
+"ship_accidents"
