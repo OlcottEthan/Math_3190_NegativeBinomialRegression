@@ -89,9 +89,6 @@
 #'   }
 #' @details The data are from McCullagh and Nelder (1989, p. 205, Table 6.2) and were also used by Greene (2003, Ch. 21), see below.
 #' 
-#' There are five ships (observations 7, 15, 23, 31, 39) with an operation period before the construction period, hence the variables service and incidents are necessarily 0. An additional observation (34) has entries representing accidentally empty cells (see McCullagh and Nelder, 1989, p. 205).
-#' 
-#' It is a bit unclear what exactly the above means. In any case, the models are fit only to those observations with service > 0.
 #' @source Online complements to Greene (2003).
 #' 
 #' https://pages.stern.nyu.edu/~wgreene/Text/tables/tablelist5.htm

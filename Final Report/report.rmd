@@ -124,5 +124,10 @@ r\;&\sim\;\text{Exp}(\cdots)
 
 ### Examples
 
+ship_accidents <- filter(ship_accidents, service >0)
+head(ship_accidents)
+
+glm.nb(ship_accidents)
+
 
 ### Outcomes and Comparisons
