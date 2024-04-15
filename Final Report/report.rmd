@@ -174,7 +174,6 @@ Let's consider anther data set!
 
 ```{r}
 bikes <- bikes_bridges
-bikes <- read_xlsx("bikesonbridges.xlsx")
 psn_mod2 <- glm(Total ~ ., data = bikes, family = poisson)
 nb_mod2 <- glm.nb(Total ~ ., data = bikes)
 
