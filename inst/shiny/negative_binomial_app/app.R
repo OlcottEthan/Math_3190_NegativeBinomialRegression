@@ -30,7 +30,7 @@ server <- function(input, output) {
     plot(0:max_x, simulated_data, type = "h", 
          main = paste("Simulated Negative Binomial Distribution\n",
                       "Number of successes:", input$size,
-                      "\nProbability of success:", input$prob),
+                      "\nProbability of success:", .4443),
          xlab = "Number of Failures", ylab = "Probability", col = "blue")
   })
 }
