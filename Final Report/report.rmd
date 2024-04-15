@@ -174,8 +174,8 @@ Let's consider anther data set!
 
 ```{r}
 bikes <- bikes_bridges
-psn_mod2 <- glm(Total ~ ., data = bikes, family = poisson)
-nb_mod2 <- glm.nb(Total ~ ., data = bikes)
+psn_mod2 <- glm(total ~ ., data = bikes, family = poisson)
+nb_mod2 <- glm.nb(total ~ ., data = bikes)
 
 
 psn_pearson2 <- residuals(psn_mod2, type = 'pearson')
