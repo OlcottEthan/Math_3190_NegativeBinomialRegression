@@ -3,7 +3,6 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       numericInput("size", "Number of Successes:", 5),
-      textOutput("probValue")
     ),
     mainPanel(
       plotOutput("distPlot")
@@ -38,4 +37,3 @@ server <- function(input, output) {
 
 # Run the application
 shinyApp(ui = ui, server = server)
-
