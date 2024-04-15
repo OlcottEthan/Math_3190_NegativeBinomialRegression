@@ -15,6 +15,8 @@ urlcolor: blue
 library(tidyverse)
 library(tsibble)
 library(lubridate)
+library(AER)
+library(MASS)
 ```
 
 # Negative Binomial Distribution
@@ -83,9 +85,152 @@ This estimate is biased, however its inverse $\frac{r + k}{r}$ is an unbiased es
 
 2.4 Connection to the Poisson Distribution
 
-The Poisson Distribution and the Negative Binomial Distribution are both distributions that can be seen as similar in nature. It is possible to look at the Negative Binomial Distribution as the generalization of the Poisson Distribution. This can be done because the Negative Binomial Distribution converges to the Poisson Distribution as the number of trials goes to infinity and the probability of success is relatively small. In other words, the Poisson Distribution rears its' head as the pk = \lambda. Or, in even more words, in situations as described above the Negative Binomial Distribution behaves similarly to the Poisson Distribution.
+The Poisson Distribution and the Negative Binomial Distribution are both distributions that can be seen as similar in nature. It is possible to look at the Negative Binomial Distribution as the generalization of the Poisson Distribution. This can be done because the Negative Binomial Distribution converges to the Poisson Distribution as the number of trials goes to infinity and the probability of success is relatively small. The math of this is as follows:
+
+\begin{align}
+\lim_{r\to\infty}\text{NegBin}\Big(r,\frac{r}{r+\lambda}\Big)
+&=\lim_{r\to\infty}\left(\frac{(k+r)!}{k!r!}\left(1-\frac{r}{r+\lambda}\right)^k\left(\frac{r}{r+\lambda}\right)^r\right)\\
+&=\lim_{r\to\infty}\left(\frac{\lambda^k}{k!}\cdot\frac{(r+k)!}{r!(r+\lambda)^k}\cdot\frac{1}{\left(1+\frac{\lambda}{r}\right)^r}\right)\\
+&=\frac{\lambda^k}{k!}\cdot1\cdot\frac{1}{e^\lambda}\\
+&=\frac{\lambda^ke^{-\lambda}}{k!}\\
+&=\text{Poisson}(\lambda)\qquad\blacksquare
+\end{align}
+
+<br>
+Thus when $p=\dfrac{r}{r+\lambda}\Rightarrow\lambda=\dfrac{(1-p)r}p$ and $r\to\infty$ we have $\text{NegBin}(r,p)=\text{Poisson}(\lambda)$.
 
 The Negative Binomial Distribution allows for the Variance and Mean to vary (which the Poisson Distribution does not allow for) and thus can deal with some data that the Poisson cannot. This is especially useful when the Poisson Distribution has issues with data that is over-dispersed and provides an alternative to the Quasi-Poisson option we explored in this class.
+
+A brief example of this can be shown using the data from our Homework 5. 
+
+```{r}
+data("ShipAccidents")
+shipacc <- ShipAccidents %>% 
+  filter(
+    service != 0
+  )
+
+psn_mod <- glm(incidents ~ ., data = shipacc, family = poisson)
+
+nb_mod <- glm.nb(incidents ~ ., data = shipacc)
+
+psn_pearson <- residuals(psn_mod, type = 'pearson')
+lin_preds <- predict(psn_mod, type = 'link')
+df_psn <- data.frame(lin_preds = lin_preds,
+                 pearson = psn_pearson, model = "Poisson")
+
+nb_pearson <- residuals(nb_mod, type = 'pearson')
+lin_preds <- predict(nb_mod, type = 'link')
+df_nb <- data.frame(lin_preds = lin_preds,
+                 pearson = nb_pearson, model = "Negative Binomial")
+
+df_combined <- rbind(df_psn, df_nb)
+
+ggplot(df_combined, aes(x = lin_preds, y = pearson, color = model)) +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  labs(x = 'Linear Predictors', y = 'Pearson Residuals')
+
+ggplot(df_combined, aes(sample = pearson, color = model)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(title = "QQ Plot: Pearson Residuals")
+```
+
+These can be slightly difficult to interpret, so we will conduct a goodness of fit test.
+
+```{r, include = F}
+p_val_psn <- 1 - pchisq(psn_mod$deviance, df = psn_mod$df.residual)
+p_val_nb <- 1 - pchisq(nb_mod$deviance, df = nb_mod$df.residual)
+
+df_3_psn <- psn_mod$df.residual
+df_3_nb <- nb_mod$df.residual
+
+test_stat_psn <- qchisq(1 - p_val_psn, df_3_psn)
+test_stat_nb <- qchisq(1 - p_val_nb, df_3_nb)
+```
+
+We have strong evidence that the natural Poisson model does not fit the data, however the Negative Binomial model performs much better here. The Poisson P-Value for the goodness of fit test is 0.0000002 and the P-Value for the Negative Binomial goodness of fit test is 0.01. We do have evidence that the Negative Binomial isn't a great fit for this data as well, but it performs considerably better than the Poisson model.
+
+Plotting the predicted incidents on top of the actual incidents gives us a good idea of how the models match up!
+
+```{r}
+psn_predictions <- exp(predict(psn_mod, type = "link"))
+nb_predictions <- exp(predict(nb_mod, type = "link"))
+
+index <- 1:length(shipacc$incidents)
+
+df1 <- data.frame(
+  index = rep(index, 3),
+  incidents = c(shipacc$incidents, psn_predictions, nb_predictions),
+  model = c(rep("Actual", length(shipacc$incidents)), rep("psn_predictions", length(psn_predictions)), rep("nb_predictions", length(nb_predictions)))
+)
+
+ggplot(df1, aes(x = index, y = incidents, color = model)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Index", y = "Incidents", color = "Model")
+```
+
+Let's consider anther data set! 
+
+```{r}
+bikes <- read_xlsx("bikesonbridges.xlsx")
+psn_mod2 <- glm(Total ~ ., data = bikes, family = poisson)
+nb_mod2 <- glm.nb(Total ~ ., data = bikes)
+
+
+psn_pearson2 <- residuals(psn_mod2, type = 'pearson')
+lin_preds2 <- predict(psn_mod2, type = 'link')
+df_psn2 <- data.frame(lin_preds = lin_preds2,
+                 pearson = psn_pearson2, model = "Poisson")
+
+nb_pearson2 <- residuals(nb_mod2, type = 'pearson')
+lin_preds2 <- predict(nb_mod2, type = 'link')
+df_nb2 <- data.frame(lin_preds = lin_preds2,
+                 pearson = nb_pearson2, model = "Negative Binomial")
+
+df_combined2 <- rbind(df_psn2, df_nb2)
+
+ggplot(df_combined2, aes(x = lin_preds, y = pearson, color = model)) +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  labs(x = 'Linear Predictors', y = 'Pearson Residuals')
+
+ggplot(df_combined2, aes(sample = pearson, color = model)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(title = "QQ Plot: Pearson Residuals")
+```
+
+```{r, include = F}
+p_val_psn2 <- 1 - pchisq(psn_mod$deviance, df = psn_mod$df.residual)
+p_val_nb2 <- 1 - pchisq(nb_mod$deviance, df = nb_mod$df.residual)
+
+df_3_psn2 <- psn_mod$df.residual
+df_3_nb2 <- nb_mod$df.residual
+
+test_stat_psn2 <- qchisq(1 - p_val_psn2, df_3_psn2)
+test_stat_nb2 <- qchisq(1 - p_val_nb2, df_3_nb2)
+```
+
+```{r}
+psn_predictions2 <- exp(predict(psn_mod2, type = "link"))
+nb_predictions2 <- exp(predict(nb_mod2, type = "link"))
+
+index <- 1:length(bikes$Total)
+
+df1 <- data.frame(
+  index = rep(index, 3),
+  incidents = c(bikes$Total, psn_predictions2, nb_predictions2),
+  model = c(rep("Actual", length(bikes$Total)), rep("psn_predictions2", length(psn_predictions2)), rep("nb_predictions2", length(nb_predictions2)))
+)
+
+ggplot(df1, aes(x = index, y = incidents, color = model)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Index", y = "Incidents", color = "Model")
+```
 
 # Negative Binomial Regression
 
