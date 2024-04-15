@@ -97,3 +97,29 @@
 #' McCullagh, P. and Nelder, J.A. (1989). Generalized Linear Models, 2nd edition. London: Chapman & Hall.
 #' @seealso Greene2003, AER package
 "ship_accidents"
+
+
+#' Bicycle Counts for East River Bridges
+#'
+#' @description Daily total of bike counts conducted monthly on the Brooklyn Bridge, Manhattan Bridge, Williamsburg Bridge, and Queensboro Bridge.
+#'
+#' @usage bikes_bridges
+#' @format A data frame containing 215 observations on 2 date variables, 2 temperature ranges, precipitation amounts, 4 different bridges and a total number of bikes.
+#'   \describe{
+#'     \item{Date}{Factor with each date,}
+#'     \item{Day}{factor with the day,}
+#'     \item{High Temp}{number with high temperature recorded each day,}
+#'     \item{Low Temp}{number with low temperature recorded each day,}
+#'     \item{Precipitation}{precipitation percentages for each day,}
+#'     \item{Brooklyn Bridge}{number of bikes that crossed the Brooklyn bridge,}
+#'     \item{Manhattan Bridge}{number of bikes that crossed the Manhattan bridge,}
+#'     \item{Williamsburg Bridge}{number of bikes that crossed the Williamsburg bridge,}
+#'     \item{Queensboro Bridge}{number of bikes that crossed the Queensboro bridge,}
+#'     \item{Total}{total number of bikes that crossed every bridge for the day,}
+#'   }
+#' @details The data are from the New York Department of Transportation for 2017
+#' 
+#' @source NYCDOT Bicycle Counts 2017.
+#' 
+#' https://data.cityofnewyork.us/Transportation/Bicycle-Counts-for-East-River-Bridges-Historical-/gua4-p9wg/about_data
+"bikes_bridges"

@@ -16,13 +16,10 @@ library(NegativeBinomialRegression)
 library(tidyverse)
 library(GGally)
 library(lubridate)
-<<<<<<< HEAD
 library(MASS)
 library(dplyr)
-=======
 library(AER)
 library(MASS)
->>>>>>> distribution
 ```
 
 
@@ -83,7 +80,7 @@ $$\hat{p} = \frac{r}{r + k}$$
 
 This estimate is biased, however its inverse $\frac{r + k}{r}$ is an unbiased estimate of $\frac{1}{p}$
 
-<<<<<<< HEAD
+
 #### 2.4 Special Parametrization
 
 Now see that if we re-parametrize with $\mu=\frac{r(1-p)}p$, $\alpha=\frac1r$, and $y=k$ that we get 
@@ -104,7 +101,7 @@ $$\widehat{\mu\mid\mathrm x_i}=e^{\mathbf X\boldsymbol\beta}$$
 Thus
 
 $$p(y_i)=\left(\begin{matrix}y_i+1/\alpha\\1/\alpha-1\end{matrix}\right)\left(\frac{1}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathbf X\boldsymbol\beta}}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{y_i}$$
-=======
+
 2.4 Connection to the Poisson Distribution
 
 The Poisson Distribution and the Negative Binomial Distribution are both distributions that can be seen as similar in nature. It is possible to look at the Negative Binomial Distribution as the generalization of the Poisson Distribution. This can be done because the Negative Binomial Distribution converges to the Poisson Distribution as the number of trials goes to infinity and the probability of success is relatively small. The math of this is as follows:
@@ -126,8 +123,7 @@ The Negative Binomial Distribution allows for the Variance and Mean to vary (whi
 A brief example of this can be shown using the data from our Homework 5. 
 
 ```{r}
-data("ShipAccidents")
-shipacc <- ShipAccidents %>% 
+shipacc <- ship_accidents %>% 
   filter(
     service != 0
   )
@@ -197,7 +193,7 @@ ggplot(df1, aes(x = index, y = incidents, color = model)) +
 Let's consider anther data set! 
 
 ```{r}
-bikes <- read_xlsx("bikesonbridges.xlsx")
+bikes <- bikes_bridges
 psn_mod2 <- glm(Total ~ ., data = bikes, family = poisson)
 nb_mod2 <- glm.nb(Total ~ ., data = bikes)
 
@@ -255,7 +251,6 @@ ggplot(df1, aes(x = index, y = incidents, color = model)) +
 ```
 
 # Negative Binomial Regression
->>>>>>> distribution
 
 
 ### Negative Binomial Regression Assumptions
