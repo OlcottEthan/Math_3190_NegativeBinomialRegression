@@ -12,10 +12,12 @@ urlcolor: blue
 ---
 
 ```{r setup, include = F}
+library(NegativeBinomialRegression)
 library(tidyverse)
-library(tsibble)
+library(GGally)
 library(lubridate)
 library(MASS)
+library(dplyr)
 ```
 
 
@@ -50,59 +52,101 @@ The Negative Binomial Distribution has many of the same types of conditions as t
 
 #### 2.2 Math Behind Negative Binomial
 
-The Probability Mass Function of the Negative Binomial Distribution with r = number of successes, p = probability of success, and k = the number of failures before the rth success is given by:
+The Probability Mass Function of the Negative Binomial Distribution with r = number of successes, p = probability of success, and k = the number of failures before the $r$th success is given by:
 
-$\text{NegBin}(k\mid r, p) = \binom{k + r - 1}{r - 1} \cdot p^{r} \cdot (1 - p)^k$
-
-x = 0, 1, 2, ...
+$\text{NegBin}(k\mid r, p) = \binom{k + r - 1}{r - 1} \cdot p^{r} \cdot (1 - p)^k\qquad\text{for}\qquad k,r=1, 2,\cdots\quad\text{and}\quad0<p\leq1$
 
 The Expected Value and Variance of the Negative Binomial Distribution described above are as follows:
 
-Expected Value:
+**Expected Value**: $\quad E(\mathbf X)=\displaystyle\frac{r\ \cdot\ (1 - p)}{p}$
 
-$\frac{r \cdot (1 - p)}{p}$
+**Variance**: $\quad V(\mathbf X)=\displaystyle\frac{r\ \cdot\ (1 - p)}{p^2}$
 
-Variance:
-
-$\frac{r \cdot (1 - p)}{p^2}$
-
-Note: There are many variations of the Negative Binomial Distribution when using separate parameters. There are variations when you can count the number of trials, redefine the r as the number of failures, or other variations of them. These do change the PMF and E$(x)$ and V$(X)$ functions for the different variations.
+*Note: There are many variations of the Negative Binomial Distribution when using separate parameters. There are variations when you can count the number of trials, redefine the r as the number of failures, or other variations of them. These do change the PMF and $E(\mathbf X)$ and $V(\mathbf X)$ functions for the different variations.*
 
 #### 2.3 Statistical Inference
 
 Minimum Variance Unbiased Estimator for p:
 
-If the probability of success isn't known and sampling will continue until the rth success is found, a sufficient statistic for the experiment then is k, the number of failures. In this case to estimate p, the minimum variance unbiased estimator is:
+If the probability of success isn't known and sampling will continue until the $r$th success is found, a sufficient statistic for the experiment then is $k$, the number of failures. In this case to estimate $p$, the minimum variance unbiased estimator is:
 
-$\hat{p} = \frac{r - 1}{r + k - 1}$
+$$\hat{p} = \frac{r - 1}{r + k - 1}$$
 
-Maximum Likelihood Estimate of p:
+Maximum Likelihood Estimate of $p$:
 
-$\hat{p} = \frac{r}{r + k}$
+$$\hat{p} = \frac{r}{r + k}$$
 
 This estimate is biased, however its inverse $\frac{r + k}{r}$ is an unbiased estimate of $\frac{1}{p}$
 
+#### 2.4 Special Parametrization
+
+Now see that if we re-parametrize with $\mu=\frac{r(1-p)}p$, $\alpha=\frac1r$, and $y=k$ that we get 
+$$\text{NegBin}(y\mid\mu,\alpha)=\left(\begin{matrix}y+\frac1\alpha\\ \frac1\alpha-1\end{matrix}\right)\left(\frac1{1+\alpha\mu}\right)^{\frac1\alpha}\left(\frac{\alpha\mu}{1+\alpha\mu}\right)^y$$
+
 ## Negative Binomial Regression
 
-Negative Binomial Regression is very similar to multiple regression but instead of assuming that the dependent variable is normal we assume that it follows a negative binomial distribution.
+Negative Binomial regression is very similar to Poisson regression and is applied when the data is a discrete, quantitative response variable ranging from 0 to infinity and larger counts are rare. The difference comes in with the dispersion. Since the Negative Binomial distribution is an extension of the Poisson distribution with the extra parameter $r$ the variance of the data does not have to be the same as the mean or expected value.
 
-This method is typically used when the data is over-dispersed, IE: the variance of the observed results is higher than the variance the model predicted. It also can be used as a generalization of Poisson regression since the mean structure is the same and it also has an extra parameter to model the over-dispersion.
+We therefore have the same link function for both Poisson and Negative Binomial regression, $\log(\widehat{E[Y\mid\mathrm x_i]})=\mathrm x_i\beta_i$ where $\mathrm x_i$ is the $i$th row of the model matrix $\mathbf X$.
 
-See the following
+Or equivalently since $E(Y)=\frac{r\ \cdot\ (1-p)}p=\mu$ we have $\log\left(\widehat{\mu\mid \mathrm x_i}\right)=\beta_0+\beta_1\mathrm x_i+\cdots+\beta_n\mathrm x_n=\mathbf X\boldsymbol\beta$
+
+Therefore we have
+
+$$\widehat{\mu\mid\mathrm x_i}=e^{\mathbf X\boldsymbol\beta}$$
+
+Thus
+
+$$p(y_i)=\left(\begin{matrix}y_i+1/\alpha\\1/\alpha-1\end{matrix}\right)\left(\frac{1}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathbf X\boldsymbol\beta}}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{y_i}$$
+
+
+### Negative Binomial Regression Assumptions
+
+1. **Negative Binomial Response**: The response variable is conditionally a count unit of time or space, described by the Negative Binomial Distribution. (Remember that the Poisson is a special limiting Negative Binomial result)
+2. **Independence**: The observations are independent of one another.
+3. **Linearity**: The log of the mean rate must be a linear function of $\mathrm x$.
+4. **over-dispersed**: The variance is larger than the mean giving and overdispersion of the data.
+
+
+### Parameter Estimation
+
+The parameters $r, \beta_0, \beta_1, \cdots, \beta_p$ are also estimated using **maximum likelihood estimation** similar to Poisson regression. See that by using the special parametrization we have the following,
 
 \begin{align}
-\lim_{r\to\infty}\text{NegBin}\Big(r,\frac{r}{r+\lambda}\Big)
-&=\lim_{r\to\infty}\left(\frac{(k+r)!}{k!r!}\left(1-\frac{r}{r+\lambda}\right)^k\left(\frac{r}{r+\lambda}\right)^r\right)\\
-&=\lim_{r\to\infty}\left(\frac{\lambda^k}{k!}\cdot\frac{(r+k)!}{r!(r+\lambda)^k}\cdot\frac{1}{\left(1+\frac{\lambda}{r}\right)^r}\right)\\
-&=\frac{\lambda^k}{k!}\cdot1\cdot\frac{1}{e^\lambda}\\
-&=\frac{\lambda^ke^{-\lambda}}{k!}\\
-&=\text{Poisson}(\lambda)\qquad\blacksquare
+L(\alpha,\beta)
+&=\prod_{i=1}^np(y_i)\\
+&=\prod_{i=1}^n\left(\begin{matrix}y_i+1/\alpha\\1/\alpha-1\end{matrix}\right)\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\\
+&=\prod_{i=1}^n\frac{(y_i+1/\alpha)!}{(y_i+1)!(1/\alpha)!}\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\\
 \end{align}
 
-<br>
-Thus when $p=\dfrac{r}{r+\lambda}\Rightarrow\lambda=\dfrac{(1-p)r}p$ and $r\to\infty$ whe have $\text{NegBin}(r,p)=\text{Poisson}(\lambda)$.
+Thus we have log likelihood function,
 
-This is important because in regression, when using the Negative binomial distribution we are able to account for the mean and the variance being different thus giving us the regressive model for the Negative Binomial distribution:
+\begin{align}
+    \ell(\alpha,\boldsymbol\beta)
+    &=\ln\left(L(\alpha,\boldsymbol\beta)\right)\\
+    &=\ln\left(\prod_{i=1}^n\frac{(y_i+1/\alpha)!}{(y_i+1)!(1/\alpha)!}\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\right)\\
+    &=\sum_{i=1}^n\Big[\ln\left((y_1+1/\alpha)!\right)-\ln\left((y_i+1)!\right)-\ln\left((1/\alpha)!\right)+y_i\ln(\alpha)+y_i\mathrm x_i\cdot\boldsymbol\beta-(y_i+1/\alpha)\ln\left(1+\alpha e^{\mathrm x_i\boldsymbol\beta}\right)\Big]
+\end{align}
+
+Then clearly the values of $\alpha$ and $\boldsymbol\beta$ that maximize $\ell(\alpha,\boldsymbol\beta)$ will be the maximum likelihood estimates and that we can solve for $\alpha$ and $\boldsymbol\beta$ by a standard derivative test, by use of the Hessian matrix, or by using a gradient descent method.
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 $$\mathbf Y_i\mid\boldsymbol\beta_0,\boldsymbol\beta_1,\cdots,\boldsymbol\beta_p,r\;\overset{\text{ind}}\sim\;\text{NegBin}(\mu_i,r)
 \quad\text{with}\quad
@@ -124,10 +168,44 @@ r\;&\sim\;\text{Exp}(\cdots)
 
 ### Examples
 
-ship_accidents <- filter(ship_accidents, service >0)
-head(ship_accidents)
 
-glm.nb(ship_accidents)
+```{r, include = F}
+droughts_nb <- droughts |>
+  mutate(length = as.integer(length),
+         year = as.character(year)) |>
+  glm.nb(data = _, length ~ year)
+
+ggplot(droughts, aes(x = length)) +
+  geom_histogram(
+    bins = length(unique(as.integer(droughts$length))), 
+    fill = 'dodgerblue',
+    color = 'black'
+  )
+
+predict(droughts_nb, data.frame(year = '1980'))
+summary(droughts_nb)
+plot(droughts_nb)
+
+```
+
+```{r, include = F}
+bike_rentals$dteday <- as.Date(bike_rentals$dteday)
+str(bike_rentals)
+
+ggplot(bike_rentals, aes(x = cnt)) +
+  geom_bar(color = 'dodgerblue')
+
+mean(bike_rentals$cnt)
+var(bike_rentals$cnt)
+length(unique(bike_rentals$cnt))
+```
+
+
+```{r BikeRentalGGpairs, cache = T, fig.width = 15, fig.height = 15, include = F}
+bike_rentals |>
+  subset(select = -c(instant, dteday)) |>
+  ggpairs()
+```
 
 
 ### Outcomes and Comparisons
