@@ -1,8 +1,9 @@
 ---
 title: "Negative Binomial Regression"
-author: 'Samuel Peterson, Elijah Wagner, and Ethan Olcott'
+author: "Samuel Peterson, Elijah Wagner, and Ethan Olcott"
 date: "April 17, 2024"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 header-includes: \usepackage{multirow, graphicx}
@@ -22,7 +23,7 @@ library(AER)
 library(readxl)
 ```
 
-
+\clearpage
 ## Negative Binomial Distribution
 
 ### 1 Brief Review
@@ -62,9 +63,9 @@ $\text{NegBin}(k\mid r, p) = \binom{k + r - 1}{r - 1} \cdot p^{r} \cdot (1 - p)^
 
 The Expected Value and Variance of the Negative Binomial Distribution described above are as follows:
 
-**Expected Value**: $\quad E(\mathbf X)=\displaystyle\frac{r\ \cdot\ (1 - p)}{p}$
+**Expected Value**: $\quad E(\mathbf X)=\displaystyle\frac{r\cdot(1 - p)}{p}$
 
-**Variance**: $\quad V(\mathbf X)=\displaystyle\frac{r\ \cdot\ (1 - p)}{p^2}$
+**Variance**: $\quad V(\mathbf X)=\displaystyle\frac{r\cdot(1 - p)}{p^2}$
 
 *Note: There are many variations of the Negative Binomial Distribution when using separate parameters. There are variations when you can count the number of trials, redefine the r as the number of failures, or other variations of them. These do change the PMF and $E(\mathbf X)$ and $V(\mathbf X)$ functions for the different variations.*
 
@@ -86,19 +87,184 @@ This estimate is biased, however its inverse $\frac{r + k}{r}$ is an unbiased es
 
 The Poisson Distribution and the Negative Binomial Distribution are both distributions that can be seen as similar in nature. It is possible to look at the Negative Binomial Distribution as the generalization of the Poisson Distribution. This can be done because the Negative Binomial Distribution converges to the Poisson Distribution as the number of trials goes to infinity and the probability of success is relatively small. The math of this is as follows:
 
-\begin{align}
+\begin{align*}
 \lim_{r\to\infty}\text{NegBin}\Big(r,\frac{r}{r+\lambda}\Big)
 &=\lim_{r\to\infty}\left(\frac{(k+r)!}{k!r!}\left(1-\frac{r}{r+\lambda}\right)^k\left(\frac{r}{r+\lambda}\right)^r\right)\\
 &=\lim_{r\to\infty}\left(\frac{\lambda^k}{k!}\cdot\frac{(r+k)!}{r!(r+\lambda)^k}\cdot\frac{1}{\left(1+\frac{\lambda}{r}\right)^r}\right)\\
 &=\frac{\lambda^k}{k!}\cdot1\cdot\frac{1}{e^\lambda}\\
 &=\frac{\lambda^ke^{-\lambda}}{k!}\\
-&=\text{Poisson}(\lambda)\qquad\blacksquare
-\end{align}
+&=\text{Poisson}(\lambda)\qquad\qquad\blacksquare
+\end{align*}
 
 <br>
 Thus when $p=\dfrac{r}{r+\lambda}\Rightarrow\lambda=\dfrac{(1-p)r}p$ and $r\to\infty$ we have $\text{NegBin}(r,p)=\text{Poisson}(\lambda)$.
 
 The Negative Binomial Distribution allows for the Variance and Mean to vary (which the Poisson Distribution does not allow for) and thus can deal with some data that the Poisson cannot. This is especially useful when the Poisson Distribution has issues with data that is over-dispersed and provides an alternative to the Quasi-Poisson option we explored in this class.
+
+
+#### 2.5 Special Parametrization
+
+Now let $\mu=\frac{r(1-p)}p$, $\alpha=\frac1r$, and $y=k$. Then see that we have,
+
+$$\text{NegBin}(y\mid\mu,\alpha)=\left(\begin{matrix}y+\frac1\alpha-1\\ \frac1\alpha-1\end{matrix}\right)\left(\frac1{1+\alpha\mu}\right)^{\frac1\alpha}\left(\frac{\alpha\mu}{1+\alpha\mu}\right)^y$$
+
+and,
+
+$$E(\mathbf X)=\mu\qquad\text{and}\qquad V(\mathbf X)=\mu\left(1+\frac{\mu}{\alpha}\right)$$
+
+This parametrization is especially helpful for finding the log likelihood function as it contains the mean and a value related to $r$, thus allowing us to simplify further.
+
+### 3 Negative Binomial Regression
+#### 3.1 Overview
+
+Negative Binomial regression is very similar to Poisson regression and is applied when the data is a discrete, quantitative response variable ranging from 0 to infinity and larger counts are rare. The difference comes in with the dispersion. Since the Negative Binomial distribution is an extension of the Poisson distribution with the extra parameter $r$ the variance of the data does not have to be the same as the mean or expected value.
+
+We therefore have the same link function for both Poisson and Negative Binomial regression, $\ln(\widehat{E[Y\mid\mathrm x_i]})=\mathrm x_i\beta_i$ where $\mathrm x_i$ is the $i$th row of the model matrix $\mathbf X$.
+
+Or equivalently, since $E(Y)=\frac{r\ \cdot\ (1-p)}p=\mu$, we have $\ln\left(\widehat{\mu\mid \mathrm x_i}\right)=\beta_0+\beta_1\mathrm x_i+\cdots+\beta_n\mathrm x_n=\mathbf X\boldsymbol\beta$
+
+Therefore we have
+
+$$\widehat{\mu\mid\mathrm x_i}=e^{\mathbf X\boldsymbol\beta}$$
+
+Thus
+
+$$p(y_i)=\left(\begin{matrix}y_i+1/\alpha-1\\1/\alpha-1\end{matrix}\right)\left(\frac{1}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathbf X\boldsymbol\beta}}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{y_i}$$
+
+#### 3.2 Negative Binomial Regression Assumptions
+
+1. **Negative Binomial Response**: The response variable is conditionally a count unit of time or space, described by the Negative Binomial Distribution. (Remember that the Poisson is a special limiting Negative Binomial result)
+2. **Independence**: The observations are independent of one another.
+3. **Linearity**: The log of the mean rate must be a linear function of $\mathrm x$.
+4. **over-dispersed**: The variance is larger than the mean giving and overdispersion of the data.
+
+Thus,
+
+$$Y\mid\beta_0,\beta_1,\cdots,\beta_p,r\;\overset{\text{ind}}\sim\;\text{NegBin}(\mu_i,r)
+\quad\text{with}\quad
+\ln(\mu_i)=\beta_0+\beta_1\mathrm x_1+\cdots+\beta_p\mathrm x_p$$
+
+with priors:
+\begin{align*}
+\beta_0\;&\sim\;N(m_0,s_0^2)\\
+\beta_1\;&\sim\;N(m_1,s_1^2)\\
+&\vdots\\
+\beta_p\;&\sim\;N(m_p,s_p^2)\\
+r\;&\sim\;\text{Exp}(\cdots)
+\end{align*}
+
+
+\clearpage
+#### 3.3 Parameter Estimation
+
+The parameters $r, \beta_0, \beta_1, \cdots, \beta_p$ are also estimated using **maximum likelihood estimation** similar to Poisson regression. See that by using the special parametrization we have the following,
+
+\begin{align*}
+L(\alpha,\beta)
+&=\prod_{i=1}^np(y_i)\\
+&=\prod_{i=1}^n\left(\begin{matrix}y_i+1/\alpha-1\\1/\alpha-1\end{matrix}\right)\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\\
+&=\prod_{i=1}^n\frac{(y_i+1/\alpha-1)!}{(y_i)!(1/\alpha-1)!}\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\\
+\end{align*}
+
+Thus we have log likelihood function,
+
+\begin{align*}
+    \ell(\alpha,\boldsymbol\beta)
+    &=\ln\left(L(\alpha,\boldsymbol\beta)\right)\\
+    &=\ln\left(\prod_{i=1}^n\frac{(y_i+1/\alpha-1)!}{(y_i)!(1/\alpha-1)!}\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\right)\\
+    &=\sum_{i=1}^n\Big[\ln\left((y_1+1/\alpha-1)!\right)-\ln\left(y_i!\right)-\ln\left((1/\alpha-1)!\right)+\\
+    &\qquad\qquad\qquad\qquad y_i\ln(\alpha)+y_i\mathrm x_i\cdot\boldsymbol\beta-(y_i+1/\alpha)\ln\left(1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}\right)\Big]
+\end{align*}
+
+Then clearly the values of $\alpha$ and $\boldsymbol\beta$ that maximize $\ell(\alpha,\boldsymbol\beta)$ will be the maximum likelihood estimates and that we can solve for $\alpha$ and $\boldsymbol\beta$ by a standard derivative test, by use of the Hessian matrix, or by using a gradient descent method.
+
+See that if we let $\psi^{(m)}:= \frac{d^m}{dz^m}\psi(z)=\frac{d^{m+1}}{dz^{m+1}}\ln\Gamma(z)$ be the polygamma function of order $m$ then we can write the partial derivatives as:
+
+\begin{align*}
+\frac{\partial\ell(\alpha,\boldsymbol\beta)}{\partial\alpha}
+&=\frac{\psi^{(0)}(1/\alpha)+\ln(1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta})+y_i\alpha-\psi^{(0)}(y_i+1/\alpha)}{\alpha^2}-\frac{(y_i+1/\alpha)e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\\
+\frac{\partial\ell(\alpha,\boldsymbol\beta)}{\partial\beta_0}
+&=y_i-\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\\
+\frac{\partial\ell(\alpha,\boldsymbol\beta)}{\partial\beta_1}
+&=y_i x_1-\frac{\alpha x_1 e^{x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\\
+&\ \vdots\\
+\frac{\partial\ell(\alpha,\boldsymbol\beta)}{\partial\beta_p}
+&=y_i x_p-\frac{\alpha x_p e^{x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}
+\end{align*}
+
+where $x_i$ is the $i$th variable.
+
+\clearpage
+#### 3.4 Residuals
+Just as in Poisson regression we can use Pearson residual in Negative Binomial regression where each residual $\hat\epsilon_i^p$ is given by,
+
+$$\hat\epsilon_i^{\mathrm p}=\frac{y_i-\hat\mu_i}{\sqrt{\hat\mu_i+\alpha\hat\mu_i^2}}$$
+
+Another common option is the Anscombe residual given by 
+
+$$\hat\epsilon_i^{\mathrm a}=\frac{\frac3\alpha\Big[(1+\alpha y_i)^{2/3}-(1+\alpha\hat\mu_i)^{2/3}\Big]+3\left(y_i^{2/3}-\hat\mu_i^{2/3}\right)}{2\left(\hat\mu_i+\alpha\hat\mu_i^2\right)^{1/6}}$$
+
+Both of these residuals are defined in order to prioritize a normal distribution.
+
+
+#### 3.5 Regression Diagnostics
+
+There are a couple of helpful diagnostics for Negative Binomial regression that use both hypothesis tests and plots, For the most part these are the same as the tests given in Poisson regression because many of the assumptions are the same.
+
+1. A residual plot of the Pearson residuals vs the predicted values. There should be a random spread of the residuals
+2. A QQ-plot of the Pearson or Anscombe residuals. These should appear to be normally distributed.
+3. A deviance goodness-of-fit (GOF) test.
+
+
+#### 3.6 Confidence Intervals for Coefficients
+
+In order to get the confidence intervals for the coefficients, *intercept* and *slope*, we can profile the likelihood function. This is a process of replacing the other parameters that we are not interested in with their maximum-likelihood estimates and then getting the intervals desired.
+
+In R we can do this with the `confint` function.
+
+#### 3.7 Examples
+
+
+```{r, include = F}
+droughts_nb <- droughts |>
+  mutate(length = as.integer(length),
+         year = as.character(year)) |>
+  glm.nb(data = _, length ~ year)
+
+ggplot(droughts, aes(x = length)) +
+  geom_histogram(
+    bins = length(unique(as.integer(droughts$length))), 
+    fill = 'dodgerblue',
+    color = 'black'
+  )
+
+predict(droughts_nb, data.frame(year = '1980'))
+summary(droughts_nb)
+plot(droughts_nb)
+
+```
+
+```{r, include = F}
+bike_rentals$dteday <- as.Date(bike_rentals$dteday)
+str(bike_rentals)
+
+ggplot(bike_rentals, aes(x = cnt)) +
+  geom_bar(color = 'dodgerblue')
+
+mean(bike_rentals$cnt)
+var(bike_rentals$cnt)
+length(unique(bike_rentals$cnt))
+```
+
+
+```{r BikeRentalGGpairs, cache = T, fig.width = 15, fig.height = 15, include = F}
+bike_rentals |>
+  subset(select = -c(instant, dteday)) |>
+  ggpairs()
+```
+
+
+#### 3.8 Outcomes and Comparisons
 
 A brief example of this can be shown using the data from our Homework 5. 
 
@@ -229,149 +395,3 @@ ggplot(df1, aes(x = index, y = incidents, color = model)) +
   geom_line() +
   labs(x = "Index", y = "Incidents", color = "Model")
 ```
-
-#### 2.5 Special Parametrization
-
-Referencing what we had before once more:
-
-\begin{align}
-\lim_{r\to\infty}\text{NegBin}\Big(r,\frac{r}{r+\lambda}\Big)
-&=\lim_{r\to\infty}\left(\frac{(k+r)!}{k!r!}\left(1-\frac{r}{r+\lambda}\right)^k\left(\frac{r}{r+\lambda}\right)^r\right)\\
-&=\lim_{r\to\infty}\left(\frac{\lambda^k}{k!}\cdot\frac{(r+k)!}{r!(r+\lambda)^k}\cdot\frac{1}{\left(1+\frac{\lambda}{r}\right)^r}\right)\\
-&=\frac{\lambda^k}{k!}\cdot1\cdot\frac{1}{e^\lambda}\\
-&=\frac{\lambda^ke^{-\lambda}}{k!}\\
-&=\text{Poisson}(\lambda)\qquad\blacksquare
-\end{align}
-
-Now see that if we re-parametrize with $\mu=\frac{r(1-p)}p$, $\alpha=\frac1r$, and $y=k$ that we get 
-$$\text{NegBin}(y\mid\mu,\alpha)=\left(\begin{matrix}y+\frac1\alpha\\ \frac1\alpha-1\end{matrix}\right)\left(\frac1{1+\alpha\mu}\right)^{\frac1\alpha}\left(\frac{\alpha\mu}{1+\alpha\mu}\right)^y$$
-
-## Negative Binomial Regression
-
-Negative Binomial regression is very similar to Poisson regression and is applied when the data is a discrete, quantitative response variable ranging from 0 to infinity and larger counts are rare. The difference comes in with the dispersion. Since the Negative Binomial distribution is an extension of the Poisson distribution with the extra parameter $r$ the variance of the data does not have to be the same as the mean or expected value.
-
-We therefore have the same link function for both Poisson and Negative Binomial regression, $\log(\widehat{E[Y\mid\mathrm x_i]})=\mathrm x_i\beta_i$ where $\mathrm x_i$ is the $i$th row of the model matrix $\mathbf X$.
-
-Or equivalently since $E(Y)=\frac{r\ \cdot\ (1-p)}p=\mu$ we have $\log\left(\widehat{\mu\mid \mathrm x_i}\right)=\beta_0+\beta_1\mathrm x_i+\cdots+\beta_n\mathrm x_n=\mathbf X\boldsymbol\beta$
-
-Therefore we have
-
-$$\widehat{\mu\mid\mathrm x_i}=e^{\mathbf X\boldsymbol\beta}$$
-
-Thus
-
-$$p(y_i)=\left(\begin{matrix}y_i+1/\alpha\\1/\alpha-1\end{matrix}\right)\left(\frac{1}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathbf X\boldsymbol\beta}}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{y_i}$$
-
-
-# Negative Binomial Regression
-
-
-### Negative Binomial Regression Assumptions
-
-1. **Negative Binomial Response**: The response variable is conditionally a count unit of time or space, described by the Negative Binomial Distribution. (Remember that the Poisson is a special limiting Negative Binomial result)
-2. **Independence**: The observations are independent of one another.
-3. **Linearity**: The log of the mean rate must be a linear function of $\mathrm x$.
-4. **over-dispersed**: The variance is larger than the mean giving and overdispersion of the data.
-
-
-### Parameter Estimation
-
-The parameters $r, \beta_0, \beta_1, \cdots, \beta_p$ are also estimated using **maximum likelihood estimation** similar to Poisson regression. See that by using the special parametrization we have the following,
-
-\begin{align}
-L(\alpha,\beta)
-&=\prod_{i=1}^np(y_i)\\
-&=\prod_{i=1}^n\left(\begin{matrix}y_i+1/\alpha\\1/\alpha-1\end{matrix}\right)\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\\
-&=\prod_{i=1}^n\frac{(y_i+1/\alpha)!}{(y_i+1)!(1/\alpha)!}\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\\
-\end{align}
-
-Thus we have log likelihood function,
-
-\begin{align}
-    \ell(\alpha,\boldsymbol\beta)
-    &=\ln\left(L(\alpha,\boldsymbol\beta)\right)\\
-    &=\ln\left(\prod_{i=1}^n\frac{(y_i+1/\alpha)!}{(y_i+1)!(1/\alpha)!}\left(\frac1{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}\right)\\
-    &=\sum_{i=1}^n\Big[\ln\left((y_1+1/\alpha)!\right)-\ln\left((y_i+1)!\right)-\ln\left((1/\alpha)!\right)+y_i\ln(\alpha)+y_i\mathrm x_i\cdot\boldsymbol\beta-(y_i+1/\alpha)\ln\left(1+\alpha e^{\mathrm x_i\boldsymbol\beta}\right)\Big]
-\end{align}
-
-Then clearly the values of $\alpha$ and $\boldsymbol\beta$ that maximize $\ell(\alpha,\boldsymbol\beta)$ will be the maximum likelihood estimates and that we can solve for $\alpha$ and $\boldsymbol\beta$ by a standard derivative test, by use of the Hessian matrix, or by using a gradient descent method.
-
-
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-$$\mathbf Y_i\mid\boldsymbol\beta_0,\boldsymbol\beta_1,\cdots,\boldsymbol\beta_p,r\;\overset{\text{ind}}\sim\;\text{NegBin}(\mu_i,r)
-\quad\text{with}\quad
-\ln(\mu_i)=\boldsymbol\beta_0+\boldsymbol\beta_1\mathbf X_{i1}+\cdots+\boldsymbol\beta_p\mathbf X_{ip}$$
-
-with priors:
-\begin{align}
-\boldsymbol\beta_0\;&\sim\;N(m_0,s_0^2)\\
-\boldsymbol\beta_1\;&\sim\;N(m_1,s_1^2)\\
-&\vdots\\
-\boldsymbol\beta_p\;&\sim\;N(m_p,s_p^2)\\
-r\;&\sim\;\text{Exp}(\cdots)
-\end{align}
-
-
-### Regression Requirements
-
-
-
-### Examples
-
-
-```{r, include = F}
-droughts_nb <- droughts |>
-  mutate(length = as.integer(length),
-         year = as.character(year)) |>
-  glm.nb(data = _, length ~ year)
-
-ggplot(droughts, aes(x = length)) +
-  geom_histogram(
-    bins = length(unique(as.integer(droughts$length))), 
-    fill = 'dodgerblue',
-    color = 'black'
-  )
-
-predict(droughts_nb, data.frame(year = '1980'))
-summary(droughts_nb)
-plot(droughts_nb)
-
-```
-
-```{r, include = F}
-bike_rentals$dteday <- as.Date(bike_rentals$dteday)
-str(bike_rentals)
-
-ggplot(bike_rentals, aes(x = cnt)) +
-  geom_bar(color = 'dodgerblue')
-
-mean(bike_rentals$cnt)
-var(bike_rentals$cnt)
-length(unique(bike_rentals$cnt))
-```
-
-
-```{r BikeRentalGGpairs, cache = T, fig.width = 15, fig.height = 15, include = F}
-bike_rentals |>
-  subset(select = -c(instant, dteday)) |>
-  ggpairs()
-```
-
-
-### Outcomes and Comparisons
