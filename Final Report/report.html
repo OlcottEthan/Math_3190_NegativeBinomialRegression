@@ -1856,13 +1856,13 @@ x_i\cdot\boldsymbol\beta}}\\
 x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm
 x_i\cdot\boldsymbol\beta}}\\
 \frac{\partial\ell(\alpha,\boldsymbol\beta)}{\partial\beta_1}
-&amp;=y_i x_1-\frac{\alpha x_1
-e^{x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm
+&amp;=y_i x_1-\frac{\alpha x_1 e^{\mathrm
+x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm
 x_i\cdot\boldsymbol\beta}}\\
 &amp;\ \vdots\\
 \frac{\partial\ell(\alpha,\boldsymbol\beta)}{\partial\beta_p}
-&amp;=y_i x_p-\frac{\alpha x_p
-e^{x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm
+&amp;=y_i x_p-\frac{\alpha x_p e^{\mathrm
+x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm
 x_i\cdot\boldsymbol\beta}}
 \end{align*}\]</span></p>
 <p>where <span class="math inline">\(x_i\)</span> is the <span class="math inline">\(i\)</span>th variable.</p>
@@ -1896,12 +1896,31 @@ to be normally distributed.</li>
 </div>
 <div id="confidence-intervals-for-coefficients" class="section level4">
 <h4>3.6 Confidence Intervals for Coefficients</h4>
+<p>In order to get the confidence intervals for the coefficients,
+<em>intercept</em> and <em>slope</em>, we can profile the likelihood
+function. This is a process of replacing the other parameters that we
+are not interested in with their maximum-likelihood estimates and then
+getting the intervals desired.</p>
+<p>In R we can do this by exponentiating the <code>confint</code>
+function.</p>
 </div>
-<div id="examples" class="section level4">
-<h4>3.7 Examples</h4>
+<div id="coefficient-interpretation" class="section level4">
+<h4>3.7 Coefficient interpretation</h4>
+<p>We interpret the coefficients just the same as we do in Poisson
+regression since our model is the same.</p>
+<p><strong>Intercept</strong>: The predicted mean of the Poisson
+distribution when each <span class="math inline">\(x_i=0\)</span> is
+<span class="math inline">\(\exp(\hat\beta_0)\)</span>.</p>
+<p><strong>Slope</strong>: The predicted change in the mean of the
+Poisson distribution when <span class="math inline">\(x_i\)</span>
+increases by one is <span class="math inline">\(\exp(\hat\beta_i)\)</span>.</p>
 </div>
-<div id="outcomes-and-comparisons" class="section level4">
-<h4>3.8 Outcomes and Comparisons</h4>
+</div>
+<div id="examples" class="section level3">
+<h3>4 Examples</h3>
+</div>
+<div id="comparisons-with-poisson" class="section level3">
+<h3>5 Comparisons with Poisson</h3>
 <p>A brief example of this can be shown using the data from our Homework
 5.</p>
 <pre class="r"><code>shipacc &lt;- ship_accidents %&gt;% 
@@ -2004,7 +2023,6 @@ ggplot(df1, aes(x = index, y = incidents, color = model)) +
   geom_point() +
   geom_line() +
   labs(x = &quot;Index&quot;, y = &quot;Incidents&quot;, color = &quot;Model&quot;)</code></pre>
-</div>
 </div>
 </div>
 
