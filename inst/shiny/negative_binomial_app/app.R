@@ -1,4 +1,6 @@
 #ui fluid page
+library(MASS)
+
 ui <- fluidPage(
   titlePanel("Negative Binomial Regression Fun"),
   sidebarLayout(
@@ -14,7 +16,9 @@ ui <- fluidPage(
       uiOutput("independentSelect")
     ),
     mainPanel(
-      plotOutput("distPlot")
+      plotOutput("distPlot"),
+      verbatimTextOutput("poissonSummary"),
+      verbatimTextOutput("negbinSummary")
     )
   )
 )
@@ -30,16 +34,16 @@ server <- function(input, output) {
   #selecing the dataset
   selectedDataset <- reactive({
     switch (input$dataset,
-      "Bridges" = list(dependent = c("Total", "Brooklyn", "Manhattan", "Williamsburg", "Queensboro"), 
-                       independent = c("Day", "High Temp", "Low Temp", "Precipitation")),
-      "Rentals" = list(dependent = c("Total", "Casual", "Registered"),
-                       independent = c("Season", "Year", "Month", "Hour", "Holliday", "Weekday", "Workday", "Weather", "Temp", "Atemp", "Windspeed")),
-      "Droughts" = list(dependent = c("Length"), 
-                        independent = c("Year")), 
-      "Restaurants" = list(dependent = c("Score"),
-                           independent = c("Year", "Locations", "Weekend")),
-      "Ships" = list(dependent = c("Incidents"), 
-                     independent = c("Type", "Construction", "Operation", "Service"))
+      "Bridges" = list(dependent = c("total", "Brooklyn_bridge", "Manhattan_bridge", "Williamsburg_bridge", "Queensboro_bridge"), 
+                       independent = c("day", "temp_high", "temp_low", "precipitation")),
+      "Rentals" = list(dependent = c("cnt", "casual", "registered"),
+                       independent = c("season", "yr", "mnth", "hr", "holiday", "weekday", "workingday", "weathersit", "temp", "atemp", "hum", "windspeed")),
+      "Droughts" = list(dependent = c("length"), 
+                        independent = c("year")), 
+      "Restaurants" = list(dependent = c("inspection_score"),
+                           independent = c("Year", "NumberofLocations", "Weekend")),
+      "Ships" = list(dependent = c("incidents"), 
+                     independent = c("type", "construction", "operation", "service"))
     )
   })
   
@@ -55,6 +59,36 @@ server <- function(input, output) {
     ind_vars <- selectedDataset()$independent
     
     checkboxGroupInput("independentVars", "Choose independent variables:", choices = ind_vars)
+  })
+  
+  poissonmodel <- reactive({
+    dep_var <- input$dependentVar
+    ind_vars <- input$independentVars
+    data <- switch(input$dataset,
+                   "Bridges" = bikes_bridges,
+                   "Rentals" = bike_rentals,
+                   "Droughts" = droughts,
+                   "Restaurants" = restaurant_inspections,
+                   "Ships" = ship_accidents)
+    
+    model <- glm(data[[dep_var]] ~ ., data = data[c(ind_vars)], family = poisson)
+    
+    return(model)
+  })
+  
+  negbinmodel <- reactive({
+    dep_var <- input$dependentVar
+    ind_vars <- input$independentVars
+    data <- switch(input$dataset,
+                   "Bridges" = bikes_bridges,
+                   "Rentals" = bike_rentals,
+                   "Droughts" = droughts,
+                   "Restaurants" = restaurant_inspections,
+                   "Ships" = ship_accidents)
+    
+    model <- glm.nb(data[[dep_var]] ~ ., data = data[c(ind_vars)])
+    
+    return(model)
   })
   
   
@@ -76,6 +110,15 @@ server <- function(input, output) {
                       "Number of successes:", input$size,
                       "\nProbability of success:", .4443),
          xlab = "Number of Failures", ylab = "Probability", col = "blue")
+  })
+  
+  
+  output$poissonSummary <- renderPrint({
+    summary(poissonmodel())
+  })
+  
+  output$negbinSummary <- renderPrint({
+    summary(negbinmodel())
   })
 }
 
