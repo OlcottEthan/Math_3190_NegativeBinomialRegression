@@ -1,6 +1,6 @@
 #ui fluid page
 ui <- fluidPage(
-  titlePanel("Negative Binomial Regressoin Fun"),
+  titlePanel("Negative Binomial Regression Fun"),
   sidebarLayout(
     sidebarPanel(
       numericInput("size", "Number of Successes:", 5),
@@ -10,7 +10,8 @@ ui <- fluidPage(
                               "Droughts",
                               "Restaurants",
                               "Ships")),
-      textInput
+      uiOutput("dependentSelect"),
+      uiOutput("independentSelect")
     ),
     mainPanel(
       plotOutput("distPlot")
@@ -41,6 +42,23 @@ server <- function(input, output) {
                      independent = c("Type", "Construction", "Operation", "Service"))
     )
   })
+  
+  output$dependentSelect <- renderUI({
+    # Get the list of dependent variables based on the selected dataset
+    dep_vars <- selectedDataset()$dependent
+    
+    selectInput("dependentVar", "Choose dependent variable:", choices = dep_vars)
+  })
+  
+  output$independentSelect <- renderUI({
+    # Get the list of independent variables based on the selected dataset
+    ind_vars <- selectedDataset()$independent
+    
+    checkboxGroupInput("independentVars", "Choose independent variables:", choices = ind_vars)
+  })
+  
+  
+  
   
   output$probValue <- renderText({
     paste(format(probability(), digits=4))

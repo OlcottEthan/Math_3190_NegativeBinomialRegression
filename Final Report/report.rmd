@@ -220,9 +220,19 @@ There are a couple of helpful diagnostics for Negative Binomial regression that 
 
 In order to get the confidence intervals for the coefficients, *intercept* and *slope*, we can profile the likelihood function. This is a process of replacing the other parameters that we are not interested in with their maximum-likelihood estimates and then getting the intervals desired.
 
-In R we can do this with the `confint` function.
+In R we can do this by exponentiating the `confint` function.
 
-#### 3.7 Examples
+
+#### 3.7 Coefficient interpretation
+
+We interpret the coefficients just the same as we do in Poisson regression since our model is the same.
+
+**Intercept**: The predicted mean of the Poisson distribution when each $x_i=0$ is $\exp(\hat\beta_0)$.
+
+**Slope**: The predicted change in the mean of the Poisson distribution when $x_i$ increases by one is $\exp(\hat\beta_i)$.
+
+\clearpage
+### 4 Examples
 
 
 ```{r, include = F}
@@ -264,7 +274,7 @@ bike_rentals |>
 ```
 
 
-#### 3.8 Outcomes and Comparisons
+### 5 Comparisons with Poisson
 
 A brief example of this can be shown using the data from our Homework 5. 
 
