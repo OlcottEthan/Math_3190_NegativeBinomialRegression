@@ -1,22 +1,45 @@
 #ui fluid page
-library(MASS)
-library(NegativeBinomialRegression)
 
 ui <- fluidPage(
   titlePanel("Negative Binomial Regression Fun"),
-  sidebarLayout(
-    sidebarPanel(
-      selectInput("dataset", "Choose a dataset",
-                  choices = c("Bridges",
-                              "Rentals",
-                              "Droughts",
-                              "Restaurants",
-                              "Ships")),
-      uiOutput("dependentSelect"),
-      uiOutput("independentSelect")
-    ),
+  fluidRow(
+    column(
+      width = 12,
+      sidebarPanel(
+        selectInput("dataset", "Choose a dataset",
+                               choices = c("Bridges", "Rentals", "Droughts",
+                                           "Restaurants", "Ships")),
+        uiOutput("dependentSelect"),
+        uiOutput("independentSelect")),
+      mainPanel(
+        plotOutput("plots"))
+  )),
+  tags$hr(),
+  fluidRow(
+    width = 12,
     mainPanel(
-      plotOutput("plots")
+      width = 15,
+      titlePanel("Dispersion"),
+      verbatimTextOutput("dispersion")
+    )
+  ),
+  tags$hr(),
+  fluidRow(
+    column(
+      width = 6,
+      mainPanel(
+        width = 15,
+        titlePanel("Poisson Model Summary"),
+        verbatimTextOutput("poissonSummary")
+        )
+    ),
+    column(
+      width = 6,
+      mainPanel(
+        width = 15,
+        titlePanel("Negative Binomial Model Summary"),
+        verbatimTextOutput("negbinSummary")
+      )
     )
   )
 )
@@ -83,6 +106,19 @@ server <- function(input, output) {
     model <- glm.nb(data[[dep_var]] ~ ., data = data[c(ind_vars)])
     
     return(model)
+  })
+  
+  
+  output$dispersion <- renderPrint({
+    dep_var <- input$dependentVar
+    disp <- switch(input$dataset,
+                   "Bridges" = bikes_bridges,
+                   "Rentals" = bike_rentals,
+                   "Droughts" = droughts,
+                   "Restaurants" = restaurant_inspections,
+                   "Ships" = ship_accidents)
+    disp <- poissonmodel()$deviance/poissonmodel()$df.residual
+    return(disp)
   })
   
   
