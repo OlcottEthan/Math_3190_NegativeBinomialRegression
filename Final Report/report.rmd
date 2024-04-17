@@ -3,9 +3,9 @@ title: "Negative Binomial Regression"
 author: "Samuel Peterson, Elijah Wagner, and Ethan Olcott"
 date: "April 17, 2024"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 header-includes: \usepackage{multirow, graphicx}
 editor_options:
   chunk_output_type: console
@@ -50,7 +50,7 @@ The Binomial Distribution predicts the number of successes when the number of tr
 3. Constant Probability
 4. Trials Continue Till Desired Success Total Reached
 
-The Negative Binomial Distribution has many of the same types of conditions as the Binomial Distribution (as to be expected), but the major difference comes in the fixed variable. The Negative Binomial is geared towards identifying the number of trials needed for a certain amount of trials.
+The Negative Binomial Distribution has many of the same types of conditions as the Binomial Distribution (as to be expected), but the major difference comes in the fixed variable. The Negative Binomial is geared towards identifying the number of trials needed for a certain amount of successes.
 
 #### 2.2 Math Behind Negative Binomial
 
@@ -190,7 +190,7 @@ See that if we let $\psi^{(m)}:= \frac{d^m}{dz^m}\psi(z)=\frac{d^{m+1}}{dz^{m+1}
 &=y_i x_p-\frac{\alpha x_p e^{\mathrm x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}
 \end{align*}
 
-Let us run a model in R. We can use `glm.nb` in the `MASS` package to run a negative binomial. We will use `bike_rentals` in the `NegativeBinomialRegression` package available on github.com from \newline "OlcottEthan/NegativeBinomialRegression".
+Let us run a model in R. We can use `glm.nb` in the `MASS` package to run a negative binomial. We will use `bikes_bridges` in the `NegativeBinomialRegression` package available on github.com from \newline "OlcottEthan/NegativeBinomialRegression".
 
 ```{r}
 bikes_bridges_nb <- glm.nb(total ~ temp_high, data = bikes_bridges)
@@ -209,7 +209,7 @@ ggplot(bikes_bridges, aes(y = total, x = temp_high)) +
 Just as in Poisson regression we can use Pearson residual in Negative Binomial regression where each residual $\hat\epsilon_i^p$ is given by,
 
 \vspace{-2ex}
-$$\hat\epsilon_i^{\mathrm p}=\frac{y_i-\hat\mu_i}{\sqrt{\hat\mu_i+\alpha\hat\mu_i^2}}$$
+$$\hat\epsilon_i^{\mathrm p}=\frac{y_i-\hat\mu_i}{\sqrt{\hat\mu_i+\dfrac{\hat\mu_i^2}\alpha}}$$
 \vspace{-1ex}
 Another common option is the Anscombe residual given by 
 
@@ -296,7 +296,7 @@ ggplot(bikes_bridges, aes(y = total, x = temp_high)) +
 ```
 
 \clearpage
-#### 3.7 Coefficient interpretation
+#### 3.7 Coefficient Interpretation
 
 We interpret the coefficients just the same as we do in Poisson regression since our model is the same.
 
@@ -312,6 +312,19 @@ exp(bikes_bridges_nb$coefficients)
 Thus the predicted mean of total number of bikes that would have crossed the four bridges in Manhattan in a day with the high temperature being zero is $e^{8.612}=5497$.
 
 The predicted change in the mean of the total number of bikes crossing every bridge in Manhattan when the high temperature increases by one is $e^{0.0206}=1.016$ 
+
+
+#### 3.8 Dispersion Factor
+
+The model given by `glm.nb` gives us a dispersion factor called `theta`. This `theta` is the same $\alpha$ value that we used in 2.5 for the special parametrization.
+
+In `glm.nb` this is treated as a nuisance parameter so it only optimizes it and does not give its confidence intervals. However the model does return the estimate (`$theta`) and its standard error (`$SE.theta`) so by employing a Wald confidence interval based on the asymptotic normal distribution we can find the confidence interval.
+
+```{r}
+bikes_bridges_nb$theta + qnorm(c(0.025, 0.975)) * bikes_bridges_nb$SE.theta
+```
+
+We can also give an initial theta value with the `init.theta` parameter although we have no control over specifying a set value, rather using the value given based of the **MLE**.
 
 
 \clearpage
@@ -457,3 +470,7 @@ Just like the Poisson Regression had various adaptations, the Negative Binomial 
 2. **Rate-adjusted Negative Binomial**: Used when there are categories or specified time intervals to get a rate adapted model.
 
 There are a lot more adaptations of the Negative binomial but these are some of the more popular options.
+
+### 7 Package Availability
+
+There is an associated package with the report available at github.com under the user OlcottEthan with the name `NegativeBinomialRegression`.
