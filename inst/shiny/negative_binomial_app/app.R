@@ -139,7 +139,7 @@ server <- function(input, output) {
                      model = "Poisson"),
           data.frame(lin_preds = predict(negbinmodel(), type = 'link'),
                      pearson = residuals(negbinmodel(), type = 'pearson'),
-                     model = "Negative Binomial"))
+                     model = "NB"))
     
     
     dep_var <- input$dependentVar
@@ -154,8 +154,8 @@ server <- function(input, output) {
                 poisson_predictions,
                 negbin_predictions),
       model = c(rep("Actual", n),
-                rep("Poisson Predictions", n),
-                rep("Negative Binomial Predictions", n)))
+                rep("Poisson", n),
+                rep("NB", n)))
     
     
     
