@@ -118,15 +118,15 @@ Negative Binomial regression is very similar to Poisson regression and is applie
 
 We therefore have the same link function for both Poisson and Negative Binomial regression, $\ln(\widehat{E[Y\mid\mathrm x_i]})=\mathrm x_i\beta_i$ where $\mathrm x_i$ is the $i$th row of the model matrix $\mathbf X$.
 
-Or equivalently, since $E(Y)=\frac{r\ \cdot\ (1-p)}p=\mu$, we have $\ln\left(\widehat{\mu\mid \mathrm x_i}\right)=\beta_0+\beta_1\mathrm x_i+\cdots+\beta_n\mathrm x_n=\mathbf X\boldsymbol\beta$
+Or equivalently, since $E(Y)=\frac{r\ \cdot\ (1-p)}p=\mu$, we have $\ln\left(\widehat{\mu\mid \mathrm x_i}\right)=\beta_0+\beta_1x_i+\cdots+\beta_nx_n=\mathbf X\boldsymbol\beta$ where $x_i$ is the $i$th variable.
 
 Therefore we have
 
-$$\widehat{\mu\mid\mathrm x_i}=e^{\mathbf X\boldsymbol\beta}$$
+$$\widehat{\mu\mid\mathrm x_i}=e^{\mathrm x_i\cdot\boldsymbol\beta}$$
 
-Thus
+Thus our regression equation is given by,
 
-$$p(y_i)=\left(\begin{matrix}y_i+1/\alpha-1\\1/\alpha-1\end{matrix}\right)\left(\frac{1}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathbf X\boldsymbol\beta}}{1+\alpha e^{\mathbf X\boldsymbol\beta}}\right)^{y_i}$$
+$$p(y_i)=\left(\begin{matrix}y_i+1/\alpha-1\\1/\alpha-1\end{matrix}\right)\left(\frac{1}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{1/\alpha}\left(\frac{\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\right)^{y_i}$$
 
 #### 3.2 Negative Binomial Regression Assumptions
 
@@ -135,11 +135,11 @@ $$p(y_i)=\left(\begin{matrix}y_i+1/\alpha-1\\1/\alpha-1\end{matrix}\right)\left(
 3. **Linearity**: The log of the mean rate must be a linear function of $\mathrm x$.
 4. **over-dispersed**: The variance is larger than the mean giving and overdispersion of the data.
 
-Thus,
+Therefore we can write the distributions as,
 
-$$Y\mid\beta_0,\beta_1,\cdots,\beta_p,r\;\overset{\text{ind}}\sim\;\text{NegBin}(\mu_i,r)
+$$Y\mid\beta_0,\beta_1,\cdots,\beta_p,r\;\overset{\text{ind}}\sim\;\text{NegBin}(\mu,r)
 \quad\text{with}\quad
-\ln(\mu_i)=\beta_0+\beta_1\mathrm x_1+\cdots+\beta_p\mathrm x_p$$
+\ln(\mu_i)=\beta_0+\beta_1x_1+\cdots+\beta_px_p$$
 
 with priors:
 \begin{align*}
@@ -150,6 +150,7 @@ with priors:
 r\;&\sim\;\text{Exp}(\cdots)
 \end{align*}
 
+where $m_i$ and $s_i$ are the mean and standard deviation for each $x_i$ variable.
 
 \clearpage
 #### 3.3 Parameter Estimation
@@ -177,7 +178,7 @@ Then clearly the values of $\alpha$ and $\boldsymbol\beta$ that maximize $\ell(\
 
 See that if we let $\psi^{(m)}:= \frac{d^m}{dz^m}\psi(z)=\frac{d^{m+1}}{dz^{m+1}}\ln\Gamma(z)$ be the polygamma function of order $m$ then we can write the partial derivatives as:
 
-\begin{align*}
+\vspace{-2ex}\begin{align*}
 \frac{\partial\ell(\alpha,\boldsymbol\beta)}{\partial\alpha}
 &=\frac{\psi^{(0)}(1/\alpha)+\ln(1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta})+y_i\alpha-\psi^{(0)}(y_i+1/\alpha)}{\alpha^2}-\frac{(y_i+1/\alpha)e^{\mathrm x_i\cdot\boldsymbol\beta}}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}\\
 \frac{\partial\ell(\alpha,\boldsymbol\beta)}{\partial\beta_0}
@@ -189,19 +190,43 @@ See that if we let $\psi^{(m)}:= \frac{d^m}{dz^m}\psi(z)=\frac{d^{m+1}}{dz^{m+1}
 &=y_i x_p-\frac{\alpha x_p e^{\mathrm x_i\cdot\boldsymbol\beta}(y_i+1/\alpha)}{1+\alpha e^{\mathrm x_i\cdot\boldsymbol\beta}}
 \end{align*}
 
-where $x_i$ is the $i$th variable.
+Let us run a model in R. We can use `glm.nb` in the `MASS` package to run a negative binomial. We will use `bike_rentals` in the `NegativeBinomialRegression` package available on github.com from \newline "OlcottEthan/NegativeBinomialRegression".
+
+```{r}
+bikes_bridges_nb <- glm.nb(total ~ temp_high, data = bikes_bridges)
+```
 
 \clearpage
+
+```{r}
+ggplot(bikes_bridges, aes(y = total, x = temp_high)) +
+  geom_point() +
+  labs(title = "Bikes Bridges Plot")
+```
+
+
 #### 3.4 Residuals
 Just as in Poisson regression we can use Pearson residual in Negative Binomial regression where each residual $\hat\epsilon_i^p$ is given by,
 
+\vspace{-2ex}
 $$\hat\epsilon_i^{\mathrm p}=\frac{y_i-\hat\mu_i}{\sqrt{\hat\mu_i+\alpha\hat\mu_i^2}}$$
-
+\vspace{-1ex}
 Another common option is the Anscombe residual given by 
 
 $$\hat\epsilon_i^{\mathrm a}=\frac{\frac3\alpha\Big[(1+\alpha y_i)^{2/3}-(1+\alpha\hat\mu_i)^{2/3}\Big]+3\left(y_i^{2/3}-\hat\mu_i^{2/3}\right)}{2\left(\hat\mu_i+\alpha\hat\mu_i^2\right)^{1/6}}$$
-
+\vspace{-1ex}
 Both of these residuals are defined in order to prioritize a normal distribution.
+
+We can get the Pearson residuals using the `residual` function,
+```{r}
+bikes_bridges_p_resids <- residuals(bikes_bridges_nb, type = 'pearson')
+```
+
+\vspace{-1ex}and the predicted values using the `predict` function.
+```{r}
+bikes_bridges_preds <- predict(bikes_bridges_nb, type = 'link')
+```
+
 
 
 #### 3.5 Regression Diagnostics
@@ -212,14 +237,65 @@ There are a couple of helpful diagnostics for Negative Binomial regression that 
 2. A QQ-plot of the Pearson or Anscombe residuals. These should appear to be normally distributed.
 3. A deviance goodness-of-fit (GOF) test.
 
+```{r}
+bikes_bridges_resids <- data.frame(
+  residuals = bikes_bridges_p_resids, 
+  predictors = bikes_bridges_preds)
+```
 
+```{r}
+ggplot(bikes_bridges_resids, aes(x=predictors, y = residuals)) +
+  geom_point() +
+  labs(x="Linear Predictors",
+       y = "Pearson Residuals",
+       title = "Residual Plot")
+```
+
+This plot is fairly well dispersed and appears to be fairly random.
+
+```{r}
+ggplot(bikes_bridges_resids, aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(x = "Theoretical Quantiles",
+       y = "Sample Quantiles",
+       title = "QQ Plot: Pearson Residuals")
+```
+
+The QQ-plot appears to be fairly normal although it does have some issues on the ends indicating that there could be issues with hetoroskedacicity
+
+Now we can perform a goodness of fit test.
+
+```{r}
+1 - pchisq(bikes_bridges_nb$deviance, df = bikes_bridges_nb$df.residual)
+```
+
+Since the $p$_value is 0.380 we fail to reject the Null hypothesis and can trust that the model is a good representation of the data.
+
+
+\clearpage
 #### 3.6 Confidence Intervals for Coefficients
 
 In order to get the confidence intervals for the coefficients, *intercept* and *slope*, we can profile the likelihood function. This is a process of replacing the other parameters that we are not interested in with their maximum-likelihood estimates and then getting the intervals desired.
 
+
 In R we can do this by exponentiating the `confint` function.
 
+```{r}
+exp(confint(bikes_bridges_nb))[2,]
+```
 
+We can also plot the confidence intervals for the mean just as we did with Poisson regression just being careful to reference the correct function of `glm.nb` instead of `glm`.
+
+```{r}
+ggplot(bikes_bridges, aes(y = total, x = temp_high)) +
+  geom_point() +
+  geom_smooth(method = "glm.nb",
+              formula = "y ~ x", se = T) +
+  labs(title = "Bikes Bridges Plot with CI")
+```
+
+\clearpage
 #### 3.7 Coefficient interpretation
 
 We interpret the coefficients just the same as we do in Poisson regression since our model is the same.
@@ -228,134 +304,141 @@ We interpret the coefficients just the same as we do in Poisson regression since
 
 **Slope**: The predicted change in the mean of the Poisson distribution when $x_i$ increases by one is $\exp(\hat\beta_i)$.
 
+```{r}
+bikes_bridges_nb$coefficients
+exp(bikes_bridges_nb$coefficients)
+```
+
+Thus the predicted mean of total number of bikes that would have crossed the four bridges in Manhattan in a day with the high temperature being zero is $e^{8.612}=5497$.
+
+The predicted change in the mean of the total number of bikes crossing every bridge in Manhattan when the high temperature increases by one is $e^{0.0206}=1.016$ 
+
+
 \clearpage
-### 4 Examples
-
-
-### 5 Comparisons with Poisson
-
-A brief example of this can be shown using the data from our Homework 5. 
-
-```{r}
-shipacc <- ship_accidents %>% 
-  filter(
-    service != 0
-  )
-
-psn_mod <- glm(incidents ~ ., data = shipacc, family = poisson)
-
-nb_mod <- glm.nb(incidents ~ ., data = shipacc)
-
-psn_pearson <- residuals(psn_mod, type = 'pearson')
-lin_preds <- predict(psn_mod, type = 'link')
-df_psn <- data.frame(lin_preds = lin_preds,
-                 pearson = psn_pearson, model = "Poisson")
-
-nb_pearson <- residuals(nb_mod, type = 'pearson')
-lin_preds <- predict(nb_mod, type = 'link')
-df_nb <- data.frame(lin_preds = lin_preds,
-                 pearson = nb_pearson, model = "Negative Binomial")
-
-df_combined <- rbind(df_psn, df_nb)
-
-ggplot(df_combined, aes(x = lin_preds, y = pearson, color = model)) +
-  geom_point() +
-  geom_hline(yintercept = 0) +
-  labs(x = 'Linear Predictors', y = 'Pearson Residuals')
-
-ggplot(df_combined, aes(sample = pearson, color = model)) +
-  stat_qq() +
-  stat_qq_line() +
-  labs(title = "QQ Plot: Pearson Residuals")
-```
-
-These can be slightly difficult to interpret, so we will conduct a goodness of fit test.
-
-```{r, include = F}
-p_val_psn <- 1 - pchisq(psn_mod$deviance, df = psn_mod$df.residual)
-p_val_nb <- 1 - pchisq(nb_mod$deviance, df = nb_mod$df.residual)
-
-df_3_psn <- psn_mod$df.residual
-df_3_nb <- nb_mod$df.residual
-
-test_stat_psn <- qchisq(1 - p_val_psn, df_3_psn)
-test_stat_nb <- qchisq(1 - p_val_nb, df_3_nb)
-```
-
-We have strong evidence that the natural Poisson model does not fit the data, however the Negative Binomial model performs much better here. The Poisson P-Value for the goodness of fit test is 0.0000002 and the P-Value for the Negative Binomial goodness of fit test is 0.01. We do have evidence that the Negative Binomial isn't a great fit for this data as well, but it performs considerably better than the Poisson model.
-
-Plotting the predicted incidents on top of the actual incidents gives us a good idea of how the models match up!
-
-```{r}
-psn_predictions <- exp(predict(psn_mod, type = "link"))
-nb_predictions <- exp(predict(nb_mod, type = "link"))
-
-index <- 1:length(shipacc$incidents)
-
-df1 <- data.frame(
-  index = rep(index, 3),
-  incidents = c(shipacc$incidents, psn_predictions, nb_predictions),
-  model = c(rep("Actual", length(shipacc$incidents)), rep("psn_predictions", length(psn_predictions)), rep("nb_predictions", length(nb_predictions)))
-)
-
-ggplot(df1, aes(x = index, y = incidents, color = model)) +
-  geom_point() +
-  geom_line() +
-  labs(x = "Index", y = "Incidents", color = "Model")
-```
+### 4 Another example
 
 Let's consider anther data set! 
 
 ```{r}
-bikes <- bikes_bridges
-psn_mod2 <- glm(total ~ ., data = bikes, family = poisson)
-nb_mod2 <- glm.nb(total ~ ., data = bikes)
+bike <- bike_rentals %>%
+  dplyr::select(yr, mnth, holiday, workingday, temp, hum, windspeed, cnt)
+bike_nb <- glm.nb(cnt ~ ., data = bike)
 
+bike_nb_df <- data.frame(lin_preds = predict(bike_nb, type = 'link'),
+                         pearson = residuals(bike_nb, type = 'pearson'))
 
-psn_pearson2 <- residuals(psn_mod2, type = 'pearson')
-lin_preds2 <- predict(psn_mod2, type = 'link')
-df_psn2 <- data.frame(lin_preds = lin_preds2,
-                 pearson = psn_pearson2, model = "Poisson")
-
-nb_pearson2 <- residuals(nb_mod2, type = 'pearson')
-lin_preds2 <- predict(nb_mod2, type = 'link')
-df_nb2 <- data.frame(lin_preds = lin_preds2,
-                 pearson = nb_pearson2, model = "Negative Binomial")
-
-df_combined2 <- rbind(df_psn2, df_nb2)
-
-ggplot(df_combined2, aes(x = lin_preds, y = pearson, color = model)) +
+ggplot(bike_nb_df, aes(x = lin_preds, y = pearson)) +
   geom_point() +
   geom_hline(yintercept = 0) +
-  labs(x = 'Linear Predictors', y = 'Pearson Residuals')
+  labs(x = "Linear Predictors",
+       y = "Pearson Residuals",
+       title = "Bike Rental Residual Plot")
 
-ggplot(df_combined2, aes(sample = pearson, color = model)) +
+ggplot(bike_nb_df, aes(sample = pearson)) +
   stat_qq() +
   stat_qq_line() +
-  labs(title = "QQ Plot: Pearson Residuals")
+  labs(x = "Theoretical Quantiles",
+       y = "Sample Quantiles",
+       title = "QQ Plot: Pearson Residuals")
 ```
 
-```{r, include = F, eval = F}
-p_val_psn2 <- 1 - pchisq(psn_mod$deviance, df = psn_mod$df.residual)
-p_val_nb2 <- 1 - pchisq(nb_mod$deviance, df = nb_mod$df.residual)
+This is clearly not a great model for the data but we'll run a GOF test anyway
 
-df_3_psn2 <- psn_mod$df.residual
-df_3_nb2 <- nb_mod$df.residual
-
-test_stat_psn2 <- qchisq(1 - p_val_psn2, df_3_psn2)
-test_stat_nb2 <- qchisq(1 - p_val_nb2, df_3_nb2)
+```{r}
+1 - pchisq(bike_nb$deviance, df = bike_nb$df.residual)
 ```
 
-```{r, eval = F}
-psn_predictions2 <- exp(predict(psn_mod2, type = "link"))
-nb_predictions2 <- exp(predict(nb_mod2, type = "link"))
+Since the p-value is zero we reject the null hypothesis and see that the model is not a good fit.
+We can see why by looking at a plot of the predicted values and the actual values.
 
-index <- 1:length(bikes$Total)
+```{r}
+bike_nb_pred <- exp(predict(bike_nb, type = "link"))
 
-df1 <- data.frame(
-  index = rep(index, 3),
-  incidents = c(bikes$Total, psn_predictions2, nb_predictions2),
-  model = c(rep("Actual", length(bikes$Total)), rep("psn_predictions2", length(psn_predictions2)), rep("nb_predictions2", length(nb_predictions2)))
+index <- 1:length(bike$cnt)
+
+df1 <- data.frame(index = rep(index, 2),
+                  incidents = c(bike$cnt, bike_nb_pred),
+                  model = c(rep("Actual",length(bike$cnt)),
+                            rep("NB Predictions", length(bike_nb_pred)))
+)
+
+ggplot(df1, aes(x = index, y = incidents, color = model)) +
+  geom_line() +
+  labs(x = "Index", y = "Bike Rentals", color = "Model")
+```
+
+
+
+\clearpage
+### 5 Comparison with Poisson
+
+Since the Negative Binomial has an extra term for dispersion it is especially useful when the poisson model is overdispersed.
+
+A brief example of a comparison with Poisson Regression can be obtained by using the data of ship accidents from Homework 5. (For ease of use we have added this to the package under the name `ship_accidents`)
+
+```{r}
+shipacc <- ship_accidents
+
+shipacc_psn <- glm(incidents ~ ., data = shipacc, family = poisson)
+
+shipacc_nb <- glm.nb(incidents ~ ., data = shipacc)
+
+
+shipacc_psn_df <- data.frame(lin_preds = predict(shipacc_psn, type = 'link'),
+                             pearson = residuals(shipacc_psn, type = 'pearson'),
+                             model = "Poisson")
+
+shipacc_nb_df <- data.frame(lin_preds = predict(shipacc_nb, type = 'link'),
+                            pearson = residuals(shipacc_nb, type = 'pearson'),
+                            model = "Negative Binomial")
+
+df_combined <- rbind(shipacc_psn_df, shipacc_nb_df)
+
+ggplot(df_combined, aes(x = lin_preds, y = pearson, color = model)) +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  labs(x = "Linear Predictors", 
+       y = "Pearson Residuals", 
+       title = "Ship Accidents Residual Plot")
+
+ggplot(df_combined, aes(sample = pearson, color = model)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(x = "Theoretical Quantiles",
+       y = "Sample Quantiles",
+       title = "QQ Plot: Pearson Residuals")
+```
+
+These are not great 
+These can be slightly difficult to interpret, so we will conduct a goodness of fit test.
+
+```{r, include = T}
+shipacc_psn_pval <- 1 - pchisq(shipacc_psn$deviance, df = shipacc_psn$df.residual)
+shipacc_nb_pval <- 1 - pchisq(shipacc_nb$deviance, df = shipacc_nb$df.residual)
+
+# Poisson
+shipacc_psn_pval
+# Negative Binomial
+shipacc_nb_pval
+```
+
+We have strong evidence that the natural Poisson model does not fit the data, however the Negative Binomial model performs much better here. The Poisson P-Value for the goodness of fit test is 0.0000002 and the P-Value for the Negative Binomial goodness of fit test is 0.007. We do have evidence that the Negative Binomial isn't a great fit for this data as well, but it performs considerably better than the Poisson model.
+
+Plotting the predicted incidents on top of the actual incidents gives us a good idea of how the models match up!
+
+```{r}
+shipacc_psn_predictions <- exp(predict(shipacc_psn, type = "link"))
+shipacc_nb_predictions <- exp(predict(shipacc_nb, type = "link"))
+
+index <- 1:length(shipacc$incidents)
+
+df1 <- data.frame(index = rep(index, 3),
+                  incidents = c(shipacc$incidents, 
+                                shipacc_psn_predictions, 
+                                shipacc_nb_predictions),
+                  model = c(rep("Actual", length(shipacc$incidents)), 
+                            rep("psn_predictions", length(shipacc_psn_predictions)), 
+                            rep("nb_predictions", length(shipacc_nb_predictions)))
 )
 
 ggplot(df1, aes(x = index, y = incidents, color = model)) +
@@ -363,3 +446,14 @@ ggplot(df1, aes(x = index, y = incidents, color = model)) +
   geom_line() +
   labs(x = "Index", y = "Incidents", color = "Model")
 ```
+
+
+\clearpage
+### 6 Other models and adaptations
+
+Just like the Poisson Regression had various adaptations, the Negative Binomial also has other methods dealing with certain cases.
+
+1. **Zero-inflated Negative Binomial**: Used for count data that exhibits overdispersion and an excess of zeros.
+2. **Rate-adjusted Negative Binomial**: Used when there are categories or specified time intervals to get a rate adapted model.
+
+There are a lot more adaptations of the Negative binomial but these are some of the more popular options.
