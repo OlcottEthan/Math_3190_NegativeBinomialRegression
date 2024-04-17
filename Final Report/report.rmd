@@ -15,12 +15,9 @@ urlcolor: blue
 ```{r setup, include = F}
 library(NegativeBinomialRegression)
 library(tidyverse)
-library(GGally)
 library(lubridate)
 library(MASS)
-library(dplyr)
 library(AER)
-library(readxl)
 ```
 
 \clearpage
@@ -233,45 +230,6 @@ We interpret the coefficients just the same as we do in Poisson regression since
 
 \clearpage
 ### 4 Examples
-
-
-```{r, include = F}
-droughts_nb <- droughts |>
-  mutate(length = as.integer(length),
-         year = as.character(year)) |>
-  glm.nb(data = _, length ~ year)
-
-ggplot(droughts, aes(x = length)) +
-  geom_histogram(
-    bins = length(unique(as.integer(droughts$length))), 
-    fill = 'dodgerblue',
-    color = 'black'
-  )
-
-predict(droughts_nb, data.frame(year = '1980'))
-summary(droughts_nb)
-plot(droughts_nb)
-
-```
-
-```{r, include = F}
-bike_rentals$dteday <- as.Date(bike_rentals$dteday)
-str(bike_rentals)
-
-ggplot(bike_rentals, aes(x = cnt)) +
-  geom_bar(color = 'dodgerblue')
-
-mean(bike_rentals$cnt)
-var(bike_rentals$cnt)
-length(unique(bike_rentals$cnt))
-```
-
-
-```{r BikeRentalGGpairs, cache = T, fig.width = 15, fig.height = 15, include = F}
-bike_rentals |>
-  subset(select = -c(instant, dteday)) |>
-  ggpairs()
-```
 
 
 ### 5 Comparisons with Poisson

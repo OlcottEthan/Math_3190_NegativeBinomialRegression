@@ -1,6 +1,6 @@
 Package: NegativeBinomialRegression
 Title: Assessing the Usefulness of Negative Binomial Regression
-Version: 0.0.1.1000
+Version: 0.0.1.2000
 Authors@R: 
   c(person("Ethan", "Olcott", email = "ethanolcott99@gmail.com", role = c("aut", "cre")),
   person("Samuel", "Peterson", email = "p3tey5@gmail.com", role = c("aut", "ctb")),
