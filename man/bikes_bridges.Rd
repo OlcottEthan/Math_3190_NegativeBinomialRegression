@@ -7,16 +7,16 @@
 \format{
 A data frame containing 215 observations on 2 date variables, 2 temperature ranges, precipitation amounts, 4 different bridges and a total number of bikes.
 \describe{
-\item{Date}{Factor with each date,}
-\item{Day}{factor with the day,}
-\item{High Temp}{number with high temperature recorded each day,}
-\item{Low Temp}{number with low temperature recorded each day,}
-\item{Precipitation}{precipitation percentages for each day,}
-\item{Brooklyn Bridge}{number of bikes that crossed the Brooklyn bridge,}
-\item{Manhattan Bridge}{number of bikes that crossed the Manhattan bridge,}
-\item{Williamsburg Bridge}{number of bikes that crossed the Williamsburg bridge,}
-\item{Queensboro Bridge}{number of bikes that crossed the Queensboro bridge,}
-\item{Total}{total number of bikes that crossed every bridge for the day,}
+\item{date}{Factor with each date,}
+\item{day}{factor with the day,}
+\item{temp_high}{number with high temperature recorded each day,}
+\item{temp_low}{number with low temperature recorded each day,}
+\item{precipitation}{precipitation percentages for each day,}
+\item{Brooklyn_bridge}{number of bikes that crossed the Brooklyn bridge,}
+\item{Manhattan_bridge}{number of bikes that crossed the Manhattan bridge,}
+\item{Williamsburg_bridge}{number of bikes that crossed the Williamsburg bridge,}
+\item{Queensboro_bridge}{number of bikes that crossed the Queensboro bridge,}
+\item{total}{total number of bikes that crossed every bridge for the day,}
 }
 }
 \source{

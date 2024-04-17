@@ -5,7 +5,7 @@
 \alias{ship_accidents}
 \title{Ship Accidents}
 \format{
-A data frame containing 40 observations on 5 ship types in 4 vintages and 2 service periods
+A data frame containing 40 observations on 5 ship types in 4 vintages and 2 service periods.
 \describe{
 \item{type}{factor with levels "A" to "E" for the different ship types,}
 \item{construction}{factor with levels "1960-64", "1965-69", "1970-74", "1975-79" for the periods of construction,}

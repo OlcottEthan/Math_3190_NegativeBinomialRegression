@@ -7,11 +7,12 @@
 \format{
 A data frame with 27178 rows and 5 variables:
 \describe{
-\item{business_name}{Name of restaurant/chain}
-\item{inspection_score}{Health Inspection Score}
-\item{Year}{Year of inspection}
-\item{NumberofLocations}{Number of locations in restaurant chain}
-\item{Weekend}{Was the inspection performed on a weekend?}
+\item{rownames}{instance of each entry,}
+\item{business_name}{Name of restaurant/chain,}
+\item{inspection_score}{Health Inspection Score,}
+\item{Year}{Year of inspection,}
+\item{NumberofLocations}{Number of locations in restaurant chain,}
+\item{Weekend}{Bool indicating if the inspection was performed on a weekend.}
 }
 }
 \source{

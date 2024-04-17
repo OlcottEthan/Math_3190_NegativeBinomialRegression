@@ -7,34 +7,34 @@
 \format{
 A data frame with 17379 rows and 16 variables:
 \describe{
-\item{instant}{record index}
-\item{dteday}{date}
-\item{season}{season (1:spring, 2:summer, 3:fall, 4:winter)}
-\item{yr}{year (0: 2011, 1:2012)}
-\item{mnth}{month (1 to 12)}
-\item{hr}{hour (0 to 23)}
-\item{holiday}{whether the day is holiday or not}
-\item{weekday}{day of the week}
-\item{workingday}{if day is neither weekend nor holiday then 1, otherwise is 0}
+\item{instant}{record index,}
+\item{dteday}{date,}
+\item{season}{season (1:spring, 2:summer, 3:fall, 4:winter),}
+\item{yr}{year (0: 2011, 1:2012),}
+\item{mnth}{month (1 to 12),}
+\item{hr}{hour (0 to 23),}
+\item{holiday}{whether the day is holiday or not,}
+\item{weekday}{day of the week,}
+\item{workingday}{if day is neither weekend nor holiday then 1, otherwise is 0,}
 \item{weathersit}{weather situation:
 \describe{
-\item{1}{Clear, Few clouds, Partly cloudy}
-\item{2}{Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist}
-\item{3}{Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds}
-\item{4}{Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog}
+\item{1}{Clear, Few clouds, Partly cloudy,}
+\item{2}{Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist,}
+\item{3}{Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds,}
+\item{4}{Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog,}
 }
 }
-\item{temp}{Normalized temperature in Celsius (values are divided by 41)}
-\item{atemp}{Normalized feeling temperature in Celsius (values are divided by 50)}
-\item{hum}{Normalized humidity (values are divided by 100)}
-\item{windspeed}{Normalized wind speed (values are divided by 67)}
-\item{casual}{count of casual users}
-\item{registered}{count of registered users}
-\item{cnt}{count of total rental bikes including both casual and registered}
+\item{temp}{Normalized temperature in Celsius (values are divided by 41),}
+\item{atemp}{Normalized feeling temperature in Celsius (values are divided by 50),}
+\item{hum}{Normalized humidity (values are divided by 100),}
+\item{windspeed}{Normalized wind speed (values are divided by 67),}
+\item{casual}{count of casual users,}
+\item{registered}{count of registered users,}
+\item{cnt}{count of total rental bikes including both casual and registered,}
 }
 }
 \usage{
-data(bike_rentals)
+bike_rentals
 }
 \description{
 The bike_rentals dataset contains information on bike-sharing rentals over the past 2 years, including environmental and seasonal settings.

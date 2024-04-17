@@ -7,8 +7,8 @@
 \format{
 A data frame with 2 columns:
 \describe{
-\item{length}{the length of time from the copletion of the last rain event
-to the beginning of the next rain event.}
+\item{rownames}{instance of each entry,}
+\item{length}{the length of time from the completion of the last rain event to the beginning of the next rain event,}
 \item{year}{the calendar year.}
 }
 }

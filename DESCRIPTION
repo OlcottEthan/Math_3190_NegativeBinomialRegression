@@ -1,6 +1,6 @@
 Package: NegativeBinomialRegression
 Title: Assessing the Usefulness of Negative Binomial Regression
-Version: 0.0.1.0000
+Version: 0.0.1.1000
 Authors@R: 
   c(person("Ethan", "Olcott", email = "ethanolcott99@gmail.com", role = c("aut", "cre")),
   person("Samuel", "Peterson", email = "p3tey5@gmail.com", role = c("aut", "ctb")),
@@ -13,10 +13,12 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Depends: 
     tidyverse,
-    R (>= 2.10)
+    R (>= 4.3.3)
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    ggplot2,
+    MASS
 Imports:
     kableExtra,
     shiny,

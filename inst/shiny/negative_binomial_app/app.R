@@ -7,8 +7,8 @@ ui <- fluidPage(
       width = 12,
       sidebarPanel(
         selectInput("dataset", "Choose a dataset",
-                               choices = c("Bridges", "Rentals", "Droughts",
-                                           "Restaurants", "Ships")),
+                               choices = c("bikes_bridges", "bike_rentals", "droughts",
+                                           "restaurant_inspections", "ship_accidents")),
         uiOutput("dependentSelect"),
         uiOutput("independentSelect")),
       mainPanel(
@@ -51,16 +51,16 @@ server <- function(input, output) {
   #selecing the dataset
   selectedDataset <- reactive({
     switch (input$dataset,
-            "Bridges" = list(dependent = c("total", "Brooklyn_bridge", "Manhattan_bridge", "Williamsburg_bridge", "Queensboro_bridge"), 
-                             independent = c("day", "temp_high", "temp_low", "precipitation")),
-            "Rentals" = list(dependent = c("cnt", "casual", "registered"),
-                             independent = c("season", "yr", "mnth", "hr", "holiday", "weekday", "workingday", "weathersit", "temp", "atemp", "hum", "windspeed")),
-            "Droughts" = list(dependent = c("length"), 
+            "bikes_bridges" = list(dependent = c("total", "Brooklyn_bridge", "Manhattan_bridge", "Williamsburg_bridge", "Queensboro_bridge"),
+                                   independent = c("day", "temp_high", "temp_low", "precipitation")),
+            "bike_rentals" = list(dependent = c("cnt", "casual", "registered"),
+                                  independent = c("season", "yr", "mnth", "hr", "holiday", "weekday", "workingday", "weathersit", "temp", "atemp", "hum", "windspeed")),
+            "droughts" = list(dependent = c("length"),
                               independent = c("year")), 
-            "Restaurants" = list(dependent = c("inspection_score"),
-                                 independent = c("Year", "NumberofLocations", "Weekend")),
-            "Ships" = list(dependent = c("incidents"), 
-                           independent = c("type", "construction", "operation", "service"))
+            "restaurant_inspections" = list(dependent = c("inspection_score"),
+                                            independent = c("Year", "NumberofLocations", "Weekend")),
+            "ship_accidents" = list(dependent = c("incidents"),
+                                    independent = c("type", "construction", "operation", "service"))
     )
   })
   
@@ -82,11 +82,11 @@ server <- function(input, output) {
     dep_var <- input$dependentVar
     ind_vars <- input$independentVars
     data <- switch(input$dataset,
-                   "Bridges" = bikes_bridges,
-                   "Rentals" = bike_rentals,
-                   "Droughts" = droughts,
-                   "Restaurants" = restaurant_inspections,
-                   "Ships" = ship_accidents)
+                   "bikes_bridges" = bikes_bridges,
+                   "bike_rentals" = bike_rentals,
+                   "droughts" = droughts,
+                   "restaurant_inspections" = restaurant_inspections,
+                   "ship_accidents" = ship_accidents)
     
     model <- glm(data[[dep_var]] ~ ., data = data[c(ind_vars)], family = "poisson")
     
@@ -97,11 +97,11 @@ server <- function(input, output) {
     dep_var <- input$dependentVar
     ind_vars <- input$independentVars
     data <- switch(input$dataset,
-                   "Bridges" = bikes_bridges,
-                   "Rentals" = bike_rentals,
-                   "Droughts" = droughts,
-                   "Restaurants" = restaurant_inspections,
-                   "Ships" = ship_accidents)
+                   "bikes_bridges" = bikes_bridges,
+                   "bike_rentals" = bike_rentals,
+                   "droughts" = droughts,
+                   "restaurant_inspections" = restaurant_inspections,
+                   "ship_accidents" = ship_accidents)
     
     model <- glm.nb(data[[dep_var]] ~ ., data = data[c(ind_vars)])
     
